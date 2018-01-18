@@ -1,5 +1,5 @@
 
-//% weight=10 color=#DF6721 icon="\uf286" block="DF-Driver"
+//% weight=10 color=#DF6721 icon="\uf013" block="DF-Driver"
 namespace motor {
     const PCA9685_ADDRESS = 0x67
     const MODE1 = 0x00
@@ -70,22 +70,6 @@ namespace motor {
         M3_M4 = 0x2
     }
 
-    export enum Turns {
-        //% blockId="T1B4" block="1/4"
-        T1B4 = 90,
-        //% blockId="T1B2" block="1/2"
-        T1B2 = 180,
-        //% blockId="T1B0" block="1"
-        T1B0 = 360,
-        //% blockId="T2B0" block="2"
-        T2B0 = 720,
-        //% blockId="T3B0" block="3"
-        T3B0 = 1080,
-        //% blockId="T4B0" block="4"
-        T4B0 = 1440,
-        //% blockId="T5B0" block="5"
-        T5B0 = 1800
-    }
 
     let initialized = false
 
@@ -239,8 +223,8 @@ namespace motor {
 
     //% blockId=motor_stepper_turn block="Stepper 28BYJ-48|%index|turn %turn"
     //% weight=80
-    export function stepperTurn_28(index: Steppers, turn: Turns): void {
-        let degree = turn;
+    export function stepperTurn_28(index: Steppers, turn: number): void {
+        let degree = turn * 360;
         stepperDegree_28(index, degree);
     }
 
@@ -271,9 +255,38 @@ namespace motor {
 
     //% blockId=motor_stepper_turn_byg block="Stepper 42BYGH1861A-C|%index|direction|%direction|turn|%turn"
     //% weight=60
-    export function stepperTurn_42(index: Steppers, direction: Dir, turn: Turns): void {
-        let degree = turn;
+    export function stepperTurn_42(index: Steppers, direction: Dir, turn: number): void {
+        let degree = turn * 360;
         stepperDegree_42(index, direction, degree);
+    }
+
+
+    //% blockId=robotbit_stepper_dual block="Dual Stepper(Degree) |M1_M2 %degree1|dir %degree1|M3_M4 %degree2|dir %degree2"
+    //% weight=89
+    export function stepperDegreeDual_42(direction1: Dir, degree1: number, direction2: Dir,degree2: number): void {
+        if (!initialized) {
+            initPCA9685()
+        }
+        let Degree1 = Math.abs(degree1);
+        Degree1 = Degree1 * direction1;
+        let Degree2 = Math.abs(degree2);
+        Degree2 = Degree2 * direction2;
+        setFreq(100);
+        setStepper_42(1, degree1 > 0);
+        setStepper_42(2, degree2 > 0);
+        degree1 = Math.abs(degree1);
+        degree2 = Math.abs(degree2);
+
+        basic.pause(500 * Math.min(degree1, degree2) / 360);
+        if (degree1 > degree2) {
+            motorStop(3); motorStop(4);
+            basic.pause(500 * (degree1 - degree2) / 360);
+        } else {
+            motorStop(1); motorStop(2);
+            basic.pause(500 * (degree2 - degree1) / 360);
+        }
+        motorStopAll()
+        setFreq(50);
     }
 
 

@@ -1,11 +1,5 @@
-/*
-Rmodified from pxt-servo/servodriver.ts
-load dependency
-"motor": "file:../pxt-motor"
-*/
 
-
-//% color="#FFB400" weight=10 icon="\uf286"
+//% weight=10 color=#DF6721 icon="\uf286" block="DF-Driver"
 namespace motor {
     const PCA9685_ADDRESS = 0x67
     const MODE1 = 0x00
@@ -47,16 +41,6 @@ namespace motor {
 
     const BYG_CHD_L = 2047
     const BYG_CHD_H = 4095
-
-    // HT16K33 commands
-    const HT16K33_ADDRESS = 0x70
-    const HT16K33_BLINK_CMD = 0x80
-    const HT16K33_BLINK_DISPLAYON = 0x01
-    const HT16K33_BLINK_OFF = 0
-    const HT16K33_BLINK_2HZ = 1
-    const HT16K33_BLINK_1HZ = 2
-    const HT16K33_BLINK_HALFHZ = 3
-    const HT16K33_CMD_BRIGHTNESS = 0xE0
 
     export enum Servos {
         S1 = 0x08,
@@ -104,30 +88,28 @@ namespace motor {
     }
 
     let initialized = false
-    let initializedMatrix = false
-    let matBuf = pins.createBuffer(17);
 
-    function i2cwrite(addr: number, reg: number, value: number) {
+    function i2cWrite(addr: number, reg: number, value: number) {
         let buf = pins.createBuffer(2)
         buf[0] = reg
         buf[1] = value
         pins.i2cWriteBuffer(addr, buf)
     }
 
-    function i2ccmd(addr: number, value: number) {
+    function i2cCmd(addr: number, value: number) {
         let buf = pins.createBuffer(1)
         buf[0] = value
         pins.i2cWriteBuffer(addr, buf)
     }
 
-    function i2cread(addr: number, reg: number) {
+    function i2cRead(addr: number, reg: number) {
         pins.i2cWriteNumber(addr, reg, NumberFormat.UInt8BE);
         let val = pins.i2cReadNumber(addr, NumberFormat.UInt8BE);
         return val;
     }
 
     function initPCA9685(): void {
-        i2cwrite(PCA9685_ADDRESS, MODE1, 0x00)
+        i2cWrite(PCA9685_ADDRESS, MODE1, 0x00)
         setFreq(50);
         initialized = true
     }
@@ -139,13 +121,13 @@ namespace motor {
         prescaleval /= freq;
         prescaleval -= 1;
         let prescale = prescaleval; //Math.Floor(prescaleval + 0.5);
-        let oldmode = i2cread(PCA9685_ADDRESS, MODE1);
+        let oldmode = i2cRead(PCA9685_ADDRESS, MODE1);
         let newmode = (oldmode & 0x7F) | 0x10; // sleep
-        i2cwrite(PCA9685_ADDRESS, MODE1, newmode); // go to sleep
-        i2cwrite(PCA9685_ADDRESS, PRESCALE, prescale); // set the prescaler
-        i2cwrite(PCA9685_ADDRESS, MODE1, oldmode);
+        i2cWrite(PCA9685_ADDRESS, MODE1, newmode); // go to sleep
+        i2cWrite(PCA9685_ADDRESS, PRESCALE, prescale); // set the prescaler
+        i2cWrite(PCA9685_ADDRESS, MODE1, oldmode);
         control.waitMicros(5000);
-        i2cwrite(PCA9685_ADDRESS, MODE1, oldmode | 0xa1);
+        i2cWrite(PCA9685_ADDRESS, MODE1, oldmode | 0xa1);
     }
 
     function setPwm(channel: number, on: number, off: number): void {
@@ -162,7 +144,7 @@ namespace motor {
     }
 
 
-    function setStepper(index: number, dir: boolean): void {
+    function setStepper_28(index: number, dir: boolean): void {
         if (index == 1) {
             if (dir) {
                 setPwm(0, STP_CHA_L, STP_CHA_H);
@@ -191,7 +173,7 @@ namespace motor {
     }
 
 
-    function setStepperByg(index: number, dir: boolean): void {
+    function setStepper_42(index: number, dir: boolean): void {
         if (index == 1) {
             if (dir) {
                 setPwm(7, BYG_CHA_L, BYG_CHA_H);
@@ -219,20 +201,9 @@ namespace motor {
         }
     }
 
-    function stopMotor(index: number) {
-        setPwm((index - 1) * 2, 0, 0);
-        setPwm((index - 1) * 2 + 1, 0, 0);
-    }
-
-    function matrixInit() {
-        i2ccmd(HT16K33_ADDRESS, 0x21);// turn on oscillator
-        i2ccmd(HT16K33_ADDRESS, HT16K33_BLINK_CMD | HT16K33_BLINK_DISPLAYON | (0 << 1));
-        i2ccmd(HT16K33_ADDRESS, HT16K33_CMD_BRIGHTNESS | 0xF);
-    }
-
-    function matrixShow() {
-        matBuf[0] = 0x00;
-        pins.i2cWriteBuffer(HT16K33_ADDRESS, matBuf);
+    function motorStop(index: number) {
+        setPwm((4 - index) * 2, 0, 0);
+        setPwm((4 - index) * 2 + 1, 0, 0);
     }
 
 
@@ -241,7 +212,7 @@ namespace motor {
     //% blockGap=50
     //% degree.min=0 degree.max=180
     //% name.fieldEditor="gridpicker" name.fieldOptions.columns=4
-    export function Servo(index: Servos, degree: number): void {
+    export function servo(index: Servos, degree: number): void {
         if (!initialized) {
             initPCA9685()
         }
@@ -253,54 +224,56 @@ namespace motor {
 
     //% blockId=motor_stepper_degree block="Stepper 28BYJ-48|%index|degree %degree"
     //% weight=90
-    export function StepperDegree(index: Steppers, degree: number): void {
+    export function stepperDegree_28(index: Steppers, degree: number): void {
         if (!initialized) {
             initPCA9685()
         }
         setFreq(100);
-        setStepper(index, degree > 0);
+        setStepper_28(index, degree > 0);
         degree = Math.abs(degree);
         basic.pause(5120 * degree / 360);
-        MotorStopAll()
+        motorStopAll()
         setFreq(50);
     }
 
 
     //% blockId=motor_stepper_turn block="Stepper 28BYJ-48|%index|turn %turn"
     //% weight=80
-    export function StepperTurn(index: Steppers, turn: Turns): void {
+    export function stepperTurn_28(index: Steppers, turn: Turns): void {
         let degree = turn;
-        StepperDegree(index, degree);
+        stepperDegree_28(index, degree);
     }
 
 
 
-    //% blockId=motor_stepper_degree_byg block="Stepper 42BYGH1861A-C|%index|degree %degree"
+    //% blockId=motor_stepper_degree_byg block="Stepper 42BYGH1861A-C|%index|direction|%direction|degree|%degree"
     //% weight=70
-    export function StepperDegreeByg(index: Steppers, degree: number): void {
+    export function stepperDegree_42(index: Steppers, direction: Dir, degree: number): void {
         if (!initialized) {
             initPCA9685()
         }
+        let Degree = Math.abs(degree);
+        Degree = Degree * direction;
         setFreq(100);
-        setStepperByg(index, degree > 0);
-        degree = Math.abs(degree);
-        basic.pause((500 * degree) / 360);
+        setStepper_42(index, Degree > 0);
+        Degree = Math.abs(Degree);
+        basic.pause((500 * Degree) / 360);
         if (index == 1) {
-            MotorStop(1)
-            MotorStop(2)
+            motorStop(1)
+            motorStop(2)
         }else{
-            MotorStop(3)
-            MotorStop(4)
+            motorStop(3)
+            motorStop(4)
         }
         setFreq(50);
     }
 
 
-    //% blockId=motor_stepper_turn_byg block="Stepper 42BYGH1861A-C|%index|turn %turn"
+    //% blockId=motor_stepper_turn_byg block="Stepper 42BYGH1861A-C|%index|direction|%direction|turn|%turn"
     //% weight=60
-    export function StepperTurnByg(index: Steppers, turn: Turns): void {
+    export function stepperTurn_42(index: Steppers, direction: Dir, turn: Turns): void {
         let degree = turn;
-        StepperDegreeByg(index, degree);
+        stepperDegree_42(index, direction, degree);
     }
 
 
@@ -339,18 +312,13 @@ namespace motor {
         }
     }
 
-    //% blockId=motor_stop block="Motor Stop|%index|"
-    //% weight=40
-    export function MotorStop(index: Motors): void {
-        MotorRun(index, 1, 0);
-    }
 
     //% blockId=motor_stop_all block="Motor Stop All"
     //% weight=30
     //% blockGap=50
-    export function MotorStopAll(): void {
+    export function motorStopAll(): void {
         for (let idx = 1; idx <= 4; idx++) {
-            stopMotor(idx);
+            motorStop(idx);
         }
     }
 }

@@ -1,0 +1,30 @@
+
+// A task runner that calls the MakeCode (PXT) compiler
+{
+    "version": "2.0.0",
+    "tasks": [{
+        "label": "pxt deploy",
+        "type": "shell",
+        "command": "pxt deploy",
+        "group": "build",
+        "problemMatcher": [ "$tsc" ]
+    }, {
+        "label": "pxt build",
+        "type": "shell",
+        "command": "pxt build",
+        "group": "test",
+        "problemMatcher": [ "$tsc" ]
+    }, {
+        "label": "pxt clean",
+        "type": "shell",
+        "command": "pxt clean",
+        "group": "test",
+        "problemMatcher": [ "$tsc" ]
+    }, {
+        "label": "pxt serial",
+        "type": "shell",
+        "command": "pxt serial",
+        "group": "test",
+        "problemMatcher": [ "$tsc" ]
+    }]
+}

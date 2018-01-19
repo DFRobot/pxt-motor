@@ -292,7 +292,7 @@ namespace motor {
         setFreq(50);
     }
 
-    //% blockId=robotbit_stepperTurnDual_42 block="Dual Stepper(Trun)|M1_M2|dir %direction1|trun %trun1|M3_M4|dir%direction2|trun %trun2"
+    //% blockId=robotbit_stepperTurnDual_42 block="Dual Stepper(Trun)|M1_M2 dir %direction1|trun %trun1|M3_M4 dir%direction2|trun %trun2"
     //% weight=85
     export function stepperTurnDual_42(direction1: Dir, trun1: number, direction2: Dir,trun2: number): void {
         if (!initialized) {

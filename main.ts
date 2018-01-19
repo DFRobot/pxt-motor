@@ -192,10 +192,6 @@ namespace motor {
         }
     }
 
-    function motorStop(index: number) {
-        setPwm((4 - index) * 2, 0, 0);
-        setPwm((4 - index) * 2 + 1, 0, 0);
-    }
 
 
     //% blockId=motor_servo block="Servo|%index|degree %degree"
@@ -213,40 +209,44 @@ namespace motor {
         setPwm(index + 7, 0, value)
     }
 
-      //% blockId=motor_stepperDegree_28 block="Stepper 28BYJ-48|%index|dir|%direction|degree|%degree"
+    /**
+	 * Execute a motor
+     * @param Motors: M1A,M1B,M2A,M2B
+     * @param CW: Clockwise direction
+     * @param CCW: Counter clockwise direction
+     * @param speed: 0~255
+	*/
+    //% blockId=motor_motor_run block="Motor|%index|dir %Dir|speed %speed"
     //% weight=90
-    export function stepperDegree_28(index: Steppers, direction: Dir, degree: number): void {
+    //% speed.min=0 speed.max=256
+    //% name.fieldEditor="gridpicker" name.fieldOptions.columns=4
+    export function MotorRun(index: Motors, direction:Dir, speed: number): void {
         if (!initialized) {
             initPCA9685()
         }
-        let Degree = Math.abs(degree);
-        Degree = Degree * direction;
-        setFreq(100);
-        setStepper_28(index, Degree > 0);
-        Degree = Math.abs(Degree);
-        basic.pause((500 * Degree) / 360);
-        if (index == 1) {
-            motorStop(1)
-            motorStop(2)
-        }else{
-            motorStop(3)
-            motorStop(4)
+        speed = speed * 16 * direction; // map 255 to 4096
+        if (speed >= 4096) {
+            speed = 4095
         }
-        setFreq(50);
+        if (speed <= -4096) {
+            speed = -4095
+        }
+        if (index > 4 || index <= 0)
+            return
+        let pn = (4-index) * 2
+        let pp = (4-index) * 2 + 1 
+        if (speed >= 0) {
+            setPwm(pp, 0, speed)
+            setPwm(pn, 0, 0)
+        } else {
+            setPwm(pp, 0, 0)
+            setPwm(pn, 0, -speed)
+        }
     }
-
-
-    //% blockId=motor_stepperTurn_28 block="Stepper 28BYJ-48|%index|dir|%direction|turn|%turn"
-    //% weight=80
-    export function stepperTurn_28(index: Steppers, direction: Dir, turn: number): void {
-        let degree = turn * 360;
-        stepperDegree_28(index, direction, degree);
-    }
-
 
 
     //% blockId=motor_stepper_degree_byg block="Stepper 42BYGH|%index|dir|%direction|degree|%degree"
-    //% weight=70
+    //% weight=80
     export function stepperDegree_42(index: Steppers, direction: Dir, degree: number): void {
         if (!initialized) {
             initPCA9685()
@@ -269,15 +269,45 @@ namespace motor {
 
 
     //% blockId=motor_stepper_turn_byg block="Stepper 42BYGH|%index|dir|%direction|turn|%turn"
-    //% weight=60
+    //% weight=70
     export function stepperTurn_42(index: Steppers, direction: Dir, turn: number): void {
         let degree = turn * 360;
         stepperDegree_42(index, direction, degree);
     }
 
+    //% blockId=motor_stepperDegree_28 block="Stepper 28BYJ-48|%index|dir|%direction|degree|%degree"
+    //% weight=60
+    export function stepperDegree_28(index: Steppers, direction: Dir, degree: number): void {
+        if (!initialized) {
+            initPCA9685()
+        }
+        let Degree = Math.abs(degree);
+        Degree = Degree * direction;
+        setFreq(100);
+        setStepper_28(index, Degree > 0);
+        Degree = Math.abs(Degree);
+        basic.pause((500 * Degree) / 360);
+        if (index == 1) {
+            motorStop(1)
+            motorStop(2)
+        }else{
+            motorStop(3)
+            motorStop(4)
+        }
+        setFreq(50);
+    }
+
+
+    //% blockId=motor_stepperTurn_28 block="Stepper 28BYJ-48|%index|dir|%direction|turn|%turn"
+    //% weight=50
+    export function stepperTurn_28(index: Steppers, direction: Dir, turn: number): void {
+        let degree = turn * 360;
+        stepperDegree_28(index, direction, degree);
+    }
+
 
     //% blockId=robotbit_stepperDegreeDual_42 block="Dual Stepper %stepper|M1_M2 dir %direction1|degree %degree1|M3_M4 dir%direction2|degree %degree2"
-    //% weight=89
+    //% weight=40
     export function stepperDegreeDual_42(stepper: Stepper, direction1: Dir, degree1: number, direction2: Dir,degree2: number): void {
         if (!initialized) {
             initPCA9685()
@@ -318,7 +348,7 @@ namespace motor {
     }
 
     //% blockId=robotbit_stepperTurnDual_42 block="Dual Stepper %stepper|M1_M2 dir %direction1|trun %trun1|M3_M4 dir%direction2|trun %trun2"
-    //% weight=85
+    //% weight=30
     export function stepperTurnDual_42(stepper: Stepper, direction1: Dir, trun1: number, direction2: Dir,trun2: number): void {
         if (!initialized) {
             initPCA9685()
@@ -336,44 +366,19 @@ namespace motor {
         
     }
 
-    /**
-	 * Execute a motor
-     * @param Motors: M1A,M1B,M2A,M2B
-     * @param CW: Clockwise direction
-     * @param CCW: Counter clockwise direction
-     * @param speed: 0~255
-	*/
-    //% blockId=motor_motor_run block="Motor|%index|dir %Dir|speed %speed"
-    //% weight=50
-    //% speed.min=0 speed.max=256
+    //% blockId=motor_motorStop block="Motor stop|%index"
+    //% weight=20
+    //% blockGap=50
+    //% degree.min=0 degree.max=180
     //% name.fieldEditor="gridpicker" name.fieldOptions.columns=4
-    export function MotorRun(index: Motors, direction:Dir, speed: number): void {
-        if (!initialized) {
-            initPCA9685()
-        }
-        speed = speed * 16 * direction; // map 255 to 4096
-        if (speed >= 4096) {
-            speed = 4095
-        }
-        if (speed <= -4096) {
-            speed = -4095
-        }
-        if (index > 4 || index <= 0)
-            return
-        let pn = (4-index) * 2
-        let pp = (4-index) * 2 + 1 
-        if (speed >= 0) {
-            setPwm(pp, 0, speed)
-            setPwm(pn, 0, 0)
-        } else {
-            setPwm(pp, 0, 0)
-            setPwm(pn, 0, -speed)
-        }
+    function motorStop(index: Motors) {
+        setPwm((4 - index) * 2, 0, 0);
+        setPwm((4 - index) * 2 + 1, 0, 0);
     }
 
 
     //% blockId=motor_stop_all block="Motor Stop All"
-    //% weight=30
+    //% weight=10
     //% blockGap=50
     export function motorStopAll(): void {
         for (let idx = 1; idx <= 4; idx++) {
@@ -381,3 +386,4 @@ namespace motor {
         }
     }
 }
+

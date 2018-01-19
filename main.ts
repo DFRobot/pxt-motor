@@ -1,4 +1,6 @@
-
+/**
+ *This is DFRobot:motor user motor and steering control function.
+ */
 //% weight=10 color=#DF6721 icon="\uf013" block="DF-Driver"
 namespace motor {
     const PCA9685_ADDRESS = 0x67
@@ -42,13 +44,19 @@ namespace motor {
     const BYG_CHD_L = 2047
     const BYG_CHD_H = 4095
 
+    /**
+     * The user can choose the step motor model.
+     */
     export enum Stepper { 
-        //% block="42BYGH"
+        //% block="42BYGH1861A-C"
         Ste1 = 1,
-        //% block="28BYJ"
+        //% block="28BYJ-48"
         Ste2 = 2
     }
 
+    /**
+     * The user can select the 8 steering gear controller.
+     */
     export enum Servos {
         S1 = 0x08,
         S2 = 0x07,
@@ -60,6 +68,9 @@ namespace motor {
         S8 = 0x01
     }
 
+    /**
+     * The user selects the 4-way dc motor.
+     */
     export enum Motors {
         M1 = 0x1,
         M2 = 0x2,
@@ -67,15 +78,22 @@ namespace motor {
         M4 = 0x4
     }
 
+    /**
+     * The user defines the motor rotation direction.
+     */
     export enum Dir {
         CW = 1,
         CCW = -1,
     }
 
+    /**
+     * The user can select a two-path stepper motor controller.
+     */
     export enum Steppers {
         M1_M2 = 0x1,
         M3_M4 = 0x2
     }
+
 
 
     let initialized = false
@@ -193,11 +211,15 @@ namespace motor {
     }
 
 
-
+    /**
+	 * Steering gear control function.
+     * S1~S8.
+     * 0°~180°.
+	*/
     //% blockId=motor_servo block="Servo|%index|degree %degree"
     //% weight=100
     //% degree.min=0 degree.max=180
-    //% name.fieldEditor="gridpicker" name.fieldOptions.columns=4
+    //% index.fieldEditor="gridpicker" index.fieldOptions.columns=4
     export function servo(index: Servos, degree: number): void {
         if (!initialized) {
             initPCA9685()
@@ -210,15 +232,14 @@ namespace motor {
 
     /**
 	 * Execute a motor
-     * @param Motors: M1A,M1B,M2A,M2B
-     * @param CW: Clockwise direction
-     * @param CCW: Counter clockwise direction
-     * @param speed: 0~255
-	*/
-    //% blockId=motor_motor_run block="Motor|%index|dir %Dir|speed %speed"
+     * M1~M4.
+     * speed(0~255).
+    */
     //% weight=90
+    //% blockId=motor_MotorRun block="Motor|%index|dir %Dir|speed %speed"
     //% speed.min=0 speed.max=256
-    //% name.fieldEditor="gridpicker" name.fieldOptions.columns=4
+    //% index.fieldEditor="gridpicker" index.fieldOptions.columns=2
+    //% direction.fieldEditor="gridpicker" direction.fieldOptions.columns=2
     export function MotorRun(index: Motors, direction:Dir, speed: number): void {
         if (!initialized) {
             initPCA9685()
@@ -243,9 +264,14 @@ namespace motor {
         }
     }
 
-
-    //% blockId=motor_stepper_degree_byg block="Stepper 42BYGH|%index|dir|%direction|degree|%degree"
+    /**
+	 * Execute a 42BYGH1861A-C step motor(Degree).
+     * M1_M2/M3_M4.
+    */
     //% weight=80
+    //% blockId=motor_stepperDegree_42 block="Stepper 42BYGH|%index|dir|%direction|degree|%degree"
+    //% index.fieldEditor="gridpicker" index.fieldOptions.columns=2
+    //% direction.fieldEditor="gridpicker" direction.fieldOptions.columns=2
     export function stepperDegree_42(index: Steppers, direction: Dir, degree: number): void {
         if (!initialized) {
             initPCA9685()
@@ -266,16 +292,27 @@ namespace motor {
         setFreq(50);
     }
 
-
-    //% blockId=motor_stepper_turn_byg block="Stepper 42BYGH|%index|dir|%direction|turn|%turn"
+    /**
+	 * Execute a 42BYGH1861A-C step motor(Turn).
+     * M1_M2/M3_M4.
+    */
     //% weight=70
+    //% blockId=motor_stepperTurn_42 block="Stepper 42BYGH|%index|dir|%direction|turn|%turn"
+    //% index.fieldEditor="gridpicker" index.fieldOptions.columns=2
+    //% direction.fieldEditor="gridpicker" direction.fieldOptions.columns=2
     export function stepperTurn_42(index: Steppers, direction: Dir, turn: number): void {
         let degree = turn * 360;
         stepperDegree_42(index, direction, degree);
     }
 
-    //% blockId=motor_stepperDegree_28 block="Stepper 28BYJ-48|%index|dir|%direction|degree|%degree"
+    /**
+	 * Execute a 28BYJ-48 step motor(Degree).
+     * M1_M2/M3_M4.
+    */
     //% weight=60
+    //% blockId=motor_stepperDegree_28 block="Stepper 28BYJ-48|%index|dir|%direction|degree|%degree"
+    //% index.fieldEditor="gridpicker" index.fieldOptions.columns=2
+    //% direction.fieldEditor="gridpicker" direction.fieldOptions.columns=2
     export function stepperDegree_28(index: Steppers, direction: Dir, degree: number): void {
         if (!initialized) {
             initPCA9685()
@@ -296,17 +333,27 @@ namespace motor {
         setFreq(50);
     }
 
-
-    //% blockId=motor_stepperTurn_28 block="Stepper 28BYJ-48|%index|dir|%direction|turn|%turn"
+    /**
+	 * Execute a 28BYJ-48 step motor(Turn).
+     * M1_M2/M3_M4.
+    */
     //% weight=50
+    //% blockId=motor_stepperTurn_28 block="Stepper 28BYJ-48|%index|dir|%direction|turn|%turn"
+    //% index.fieldEditor="gridpicker" index.fieldOptions.columns=2
+    //% direction.fieldEditor="gridpicker" direction.fieldOptions.columns=2
     export function stepperTurn_28(index: Steppers, direction: Dir, turn: number): void {
         let degree = turn * 360;
         stepperDegree_28(index, direction, degree);
     }
 
-
-    //% blockId=robotbit_stepperDegreeDual_42 block="Dual Stepper %stepper|M1_M2 dir %direction1|degree %degree1|M3_M4 dir%direction2|degree %degree2"
+    /**
+	 * Two parallel stepper motors are executed simultaneously(DegreeDual).
+    */
     //% weight=40
+    //% blockId=motor_stepperDegreeDual_42 block="Dual Stepper %stepper|M1_M2 dir %direction1|degree %degree1|M3_M4 dir%direction2|degree %degree2"
+    //% stepper.fieldEditor="gridpicker" stepper.fieldOptions.columns=2
+    //% direction1.fieldEditor="gridpicker" direction1.fieldOptions.columns=2
+    //% direction2.fieldEditor="gridpicker" direction2.fieldOptions.columns=2
     export function stepperDegreeDual_42(stepper: Stepper, direction1: Dir, degree1: number, direction2: Dir,degree2: number): void {
         if (!initialized) {
             initPCA9685()
@@ -346,8 +393,14 @@ namespace motor {
         setFreq(50);
     }
 
-    //% blockId=robotbit_stepperTurnDual_42 block="Dual Stepper %stepper|M1_M2 dir %direction1|trun %trun1|M3_M4 dir%direction2|trun %trun2"
+    /**
+	 * Two parallel stepper motors are executed simultaneously(Turn).
+    */
     //% weight=30
+    //% blockId=motor_stepperTurnDual_42 block="Dual Stepper %stepper|M1_M2 dir %direction1|trun %trun1|M3_M4 dir%direction2|trun %trun2"
+    //% stepper.fieldEditor="gridpicker" stepper.fieldOptions.columns=2
+    //% direction1.fieldEditor="gridpicker" direction1.fieldOptions.columns=2
+    //% direction2.fieldEditor="gridpicker" direction2.fieldOptions.columns=2
     export function stepperTurnDual_42(stepper: Stepper, direction1: Dir, trun1: number, direction2: Dir,trun2: number): void {
         if (!initialized) {
             initPCA9685()
@@ -365,16 +418,22 @@ namespace motor {
         
     }
 
-    //% blockId=motor_motorStop block="Motor stop|%index"
+    /**
+	 * Stop the dc motor.
+    */
     //% weight=20
-    function motorStop(index: Motors) {
+    //% blockId=motor_motorStop block="Motor stop|%index"
+    //% index.fieldEditor="gridpicker" index.fieldOptions.columns=2 
+    export function motorStop(index: Motors) {
         setPwm((4 - index) * 2, 0, 0);
         setPwm((4 - index) * 2 + 1, 0, 0);
     }
 
-
-    //% blockId=motor_stop_all block="Motor Stop All"
+    /**
+	 * Stop all motors
+    */
     //% weight=10
+    //% blockId=motor_motorStopAll block="Motor Stop All"
     export function motorStopAll(): void {
         for (let idx = 1; idx <= 4; idx++) {
             motorStop(idx);

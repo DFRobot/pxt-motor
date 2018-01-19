@@ -236,7 +236,7 @@ namespace motor {
      * speed(0~255).
     */
     //% weight=90
-    //% blockId=motor_MotorRun block="Motor|%index|dir %Dir|speed %speed"
+    //% blockId=motor_MotorRun block="Motor|%index|dir|%Dir|speed|%speed"
     //% speed.min=0 speed.max=256
     //% index.fieldEditor="gridpicker" index.fieldOptions.columns=2
     //% direction.fieldEditor="gridpicker" direction.fieldOptions.columns=2
@@ -350,7 +350,7 @@ namespace motor {
 	 * Two parallel stepper motors are executed simultaneously(DegreeDual).
     */
     //% weight=40
-    //% blockId=motor_stepperDegreeDual_42 block="Dual Stepper %stepper|M1_M2 dir %direction1|degree %degree1|M3_M4 dir%direction2|degree %degree2"
+    //% blockId=motor_stepperDegreeDual_42 block="Dual Stepper|%stepper|M1_M2 dir|%direction1|degree|%degree1|M3_M4 dir|%direction2|degree|%degree2"
     //% stepper.fieldEditor="gridpicker" stepper.fieldOptions.columns=2
     //% direction1.fieldEditor="gridpicker" direction1.fieldOptions.columns=2
     //% direction2.fieldEditor="gridpicker" direction2.fieldOptions.columns=2
@@ -397,7 +397,7 @@ namespace motor {
 	 * Two parallel stepper motors are executed simultaneously(Turn).
     */
     //% weight=30
-    //% blockId=motor_stepperTurnDual_42 block="Dual Stepper %stepper|M1_M2 dir %direction1|trun %trun1|M3_M4 dir%direction2|trun %trun2"
+    //% blockId=motor_stepperTurnDual_42 block="Dual Stepper|%stepper|M1_M2 dir|%direction1|trun|%trun1|M3_M4 dir|%direction2|trun|%trun2"
     //% stepper.fieldEditor="gridpicker" stepper.fieldOptions.columns=2
     //% direction1.fieldEditor="gridpicker" direction1.fieldOptions.columns=2
     //% direction2.fieldEditor="gridpicker" direction2.fieldOptions.columns=2

@@ -119,7 +119,7 @@ namespace motor {
 
     function initPCA9685(): void {
         i2cWrite(PCA9685_ADDRESS, MODE1, 0x00)
-        setFreq(50);
+        setFreq(100);
         initialized = true
     }
 
@@ -225,8 +225,8 @@ namespace motor {
             initPCA9685()
         }
         // 50hz: 20,000 us
-        let v_us = (degree * 10 + 600) // 0.6 ~ 2.4
-        let value = v_us * 4095 / 20000
+        let v_us = (degree * 11 + 500) // 0.5ms ~ 2.5ms
+        let value = v_us * 4095 / 10000
         setPwm(index + 7, 0, value)
     }
 
@@ -281,7 +281,7 @@ namespace motor {
         }
         let Degree = Math.abs(degree);
         Degree = Degree * direction;
-        setFreq(100);
+        //setFreq(100);
         setStepper_42(index, Degree > 0);
         Degree = Math.abs(Degree);
         basic.pause((500 * Degree) / 360);
@@ -292,7 +292,7 @@ namespace motor {
             motorStop(3)
             motorStop(4)
         }
-        setFreq(50);
+        //setFreq(50);
     }
 
     /**
@@ -328,7 +328,7 @@ namespace motor {
         }
         let Degree = Math.abs(degree);
         Degree = Degree * direction;
-        setFreq(100);
+        //setFreq(100);
         setStepper_28(index, Degree > 0);
         Degree = Math.abs(Degree);
         basic.pause((500 * Degree) / 360);
@@ -339,7 +339,7 @@ namespace motor {
             motorStop(3)
             motorStop(4)
         }
-        setFreq(50);
+        //setFreq(50);
     }
 
     /**
@@ -382,7 +382,7 @@ namespace motor {
         let Degree2 = Math.abs(degree2);
         let Degree2_ = Degree2;
         Degree2 = Degree2 * direction2;
-        setFreq(100);
+        //setFreq(100);
 
         if (stepper == 1) {
             timeout1 = 500 * Math.min(Degree1_, Degree2_) / 360;
@@ -405,7 +405,7 @@ namespace motor {
             basic.pause(timeout3);
         }
         motorStopAll()
-        setFreq(50);
+        //setFreq(50);
     }
 
     /**

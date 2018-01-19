@@ -276,6 +276,9 @@ namespace motor {
         if (!initialized) {
             initPCA9685()
         }
+        if (degree == 0) { 
+            return;
+        }
         let Degree = Math.abs(degree);
         Degree = Degree * direction;
         setFreq(100);
@@ -301,6 +304,9 @@ namespace motor {
     //% index.fieldEditor="gridpicker" index.fieldOptions.columns=2
     //% direction.fieldEditor="gridpicker" direction.fieldOptions.columns=2
     export function stepperTurn_42(index: Steppers, direction: Dir, turn: number): void {
+        if (turn == 0) { 
+            return;
+        }
         let degree = turn * 360;
         stepperDegree_42(index, direction, degree);
     }
@@ -316,6 +322,9 @@ namespace motor {
     export function stepperDegree_28(index: Steppers, direction: Dir, degree: number): void {
         if (!initialized) {
             initPCA9685()
+        }
+        if (degree == 0) { 
+            return;
         }
         let Degree = Math.abs(degree);
         Degree = Degree * direction;
@@ -342,6 +351,9 @@ namespace motor {
     //% index.fieldEditor="gridpicker" index.fieldOptions.columns=2
     //% direction.fieldEditor="gridpicker" direction.fieldOptions.columns=2
     export function stepperTurn_28(index: Steppers, direction: Dir, turn: number): void {
+        if (turn == 0) { 
+            return;
+        }
         let degree = turn * 360;
         stepperDegree_28(index, direction, degree);
     }
@@ -357,6 +369,9 @@ namespace motor {
     export function stepperDegreeDual_42(stepper: Stepper, direction1: Dir, degree1: number, direction2: Dir,degree2: number): void {
         if (!initialized) {
             initPCA9685()
+        }
+        if ((degree1 == 0)&&(degree2 == 0)) { 
+            return;
         }
         let timeout1 = 0;
         let timeout2 = 0;
@@ -402,8 +417,8 @@ namespace motor {
     //% direction1.fieldEditor="gridpicker" direction1.fieldOptions.columns=2
     //% direction2.fieldEditor="gridpicker" direction2.fieldOptions.columns=2
     export function stepperTurnDual_42(stepper: Stepper, direction1: Dir, trun1: number, direction2: Dir,trun2: number): void {
-        if (!initialized) {
-            initPCA9685()
+        if ((trun1 == 0)&&(trun2 == 0)) { 
+            return;
         }
         let degree1 = trun1 * 360;
         let degree2 = trun2 * 360;

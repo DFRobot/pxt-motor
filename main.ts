@@ -43,7 +43,9 @@ namespace motor {
     const BYG_CHD_H = 4095
 
     export enum Stepper { 
+        //% block="28BYJ"
         Ste1 = 1,
+        //% block="42BYGH"
         Ste2 = 2
     }
 
@@ -266,24 +268,34 @@ namespace motor {
     }
 
 
-    //% blockId=robotbit_stepperDegreeDual_42 block="Dual Stepper(Degree)|M1_M2 dir %direction1|degree %degree1|M3_M4 dir%direction2|degree %degree2"
+    //% blockId=robotbit_stepperDegreeDual_42 block="Dual Stepper %stepper|M1_M2 dir %direction1|degree %degree1|M3_M4 dir%direction2|degree %degree2"
     //% weight=89
-    export function stepperDegreeDual_42(direction1: Dir, degree1: number, direction2: Dir,degree2: number): void {
+    export function stepperDegreeDual_42(stepper: Stepper, direction1: Dir, degree1: number, direction2: Dir,degree2: number): void {
         if (!initialized) {
             initPCA9685()
         }
+        let timeout1 = 0;
+        let timeout2 = 0;
+        let timeout3 = 0;
         let Degree1 = Math.abs(degree1);
         let Degree1_ = Degree1;
         Degree1 = Degree1 * direction1;
         let Degree2 = Math.abs(degree2);
         let Degree2_ = Degree2;
         Degree2 = Degree2 * direction2;
-        let timeout1 = 500 * Math.min(Degree1_, Degree2_) / 360;
-        let timeout2 = 500 * (Degree1_ - Degree2_) / 360;
-        let timeout3 = 500 * (Degree2_ - Degree1_) / 360;
         setFreq(100);
-        setStepper_42(1, Degree1 > 0);
-        setStepper_42(2, Degree2 > 0);
+
+        if (stepper == 1) {
+            timeout1 = 500 * Math.min(Degree1_, Degree2_) / 360;
+            timeout2 = 500 * (Degree1_ - Degree2_) / 360;
+            timeout3 = 500 * (Degree2_ - Degree1_) / 360;
+            setStepper_42(1, Degree1 > 0);
+            setStepper_42(2, Degree2 > 0);
+        } else if (stepper == 2) {
+            //
+        } else { 
+            //
+        }
         basic.pause(timeout1);
 
         if (Degree1_ > Degree2_) {
@@ -305,8 +317,15 @@ namespace motor {
         }
         let degree1 = trun1 * 360;
         let degree2 = trun2 * 360;
-            
-        stepperDegreeDual_42(direction1, degree1, direction2, degree1);
+        
+        if (stepper == 1) {
+            stepperDegreeDual_42(1, direction1, degree1, direction2, degree1);
+        } else if (stepper == 2) {
+            //stepperDegreeDual_28(direction1, degree1, direction2, degree1);
+        } else { 
+
+        }
+        
     }
 
     /**

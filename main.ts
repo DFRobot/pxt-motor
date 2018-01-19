@@ -284,7 +284,7 @@ namespace motor {
         //setFreq(100);
         setStepper_42(index, Degree > 0);
         Degree = Math.abs(Degree);
-        basic.pause((250 * Degree) / 360);
+        basic.pause((1000 * Degree) / 360);
         if (index == 1) {
             motorStop(1)
             motorStop(2)
@@ -331,7 +331,7 @@ namespace motor {
         //setFreq(100);
         setStepper_28(index, Degree > 0);
         Degree = Math.abs(Degree);
-        basic.pause((250 * Degree) / 360);
+        basic.pause((1000 * Degree) / 360);
         if (index == 1) {
             motorStop(1)
             motorStop(2)
@@ -385,9 +385,9 @@ namespace motor {
         //setFreq(100);
 
         if (stepper == 1) {
-            timeout1 = 250 * Math.min(Degree1_, Degree2_) / 360;
-            timeout2 = 250 * (Degree1_ - Degree2_) / 360;
-            timeout3 = 250 * (Degree2_ - Degree1_) / 360;
+            timeout1 = 1000 * Math.min(Degree1_, Degree2_) / 360;
+            timeout2 = 1000 * (Degree1_ - Degree2_) / 360;
+            timeout3 = 1000 * (Degree2_ - Degree1_) / 360;
             setStepper_42(1, Degree1 > 0);
             setStepper_42(2, Degree2 > 0);
         } else if (stepper == 2) {

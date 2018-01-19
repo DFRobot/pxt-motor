@@ -1,0 +1,4 @@
+{
+	"motor.servo|block": "舵机 %index|角度 %degree"
+
+}

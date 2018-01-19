@@ -216,7 +216,7 @@ namespace motor {
      * S1~S8.
      * 0°~180°.
 	*/
-    //% blockId=motor_servo block="Servo|%index|degree %degree"
+    //% blockId=motor_servo block="Servo %index|degree %degree"
     //% weight=100
     //% degree.min=0 degree.max=180
     //% index.fieldEditor="gridpicker" index.fieldOptions.columns=4

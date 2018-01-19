@@ -281,7 +281,7 @@ namespace motor {
         }
         let Degree = Math.abs(degree);
         Degree = Degree * direction;
-        //setFreq(100);
+        setFreq(100);
         setStepper_42(index, Degree > 0);
         Degree = Math.abs(Degree);
         basic.pause((500 * Degree) / 360);
@@ -328,7 +328,7 @@ namespace motor {
         }
         let Degree = Math.abs(degree);
         Degree = Degree * direction;
-        //setFreq(100);
+        setFreq(100);
         setStepper_28(index, Degree > 0);
         Degree = Math.abs(Degree);
         basic.pause((500 * Degree) / 360);
@@ -382,7 +382,7 @@ namespace motor {
         let Degree2 = Math.abs(degree2);
         let Degree2_ = Degree2;
         Degree2 = Degree2 * direction2;
-        //setFreq(100);
+        setFreq(100);
 
         if (stepper == 1) {
             timeout1 = 500 * Math.min(Degree1_, Degree2_) / 360;

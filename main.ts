@@ -261,7 +261,7 @@ namespace motor {
     }
 
 
-    //% blockId=robotbit_stepperDegreeDual_42 block="Dual Stepper(Degree)|M1_M2 %direction1|%degree1|M3_M4 %direction2|%degree2"
+    //% blockId=robotbit_stepperDegreeDual_42 block="Dual Stepper(Degree)|M1_M2 dir %direction1|trun %degree1|M3_M4 dir%direction2|trun %degree2"
     //% weight=89
     export function stepperDegreeDual_42(direction1: Dir, degree1: number, direction2: Dir,degree2: number): void {
         if (!initialized) {

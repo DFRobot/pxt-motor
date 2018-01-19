@@ -119,7 +119,7 @@ namespace motor {
 
     function initPCA9685(): void {
         i2cWrite(PCA9685_ADDRESS, MODE1, 0x00)
-        setFreq(200);
+        setFreq(50);
         initialized = true
     }
 
@@ -226,7 +226,7 @@ namespace motor {
         }
         // 200hz: 50,00 us
         let v_us = (degree * 11 + 500) // 0.5ms ~ 2.5ms
-        let value = v_us * 4095 / 5000
+        let value = v_us * 4095 / 20000
         setPwm(index + 7, 0, value)
     }
 

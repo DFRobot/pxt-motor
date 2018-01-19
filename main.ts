@@ -193,7 +193,7 @@ namespace motor {
                 setPwm(7, BYG_CHC_L, BYG_CHC_H);
                 setPwm(6, BYG_CHD_L, BYG_CHD_H);
                 setPwm(5, BYG_CHA_L, BYG_CHA_H);
-                setPwm(4, BYG_CHB_L, BYG_CHD_H);
+                setPwm(4, BYG_CHB_L, BYG_CHB_H);
             }
         } else {
             if (dir) {
@@ -205,7 +205,7 @@ namespace motor {
                 setPwm(3, BYG_CHC_L, BYG_CHC_H);
                 setPwm(2, BYG_CHD_L, BYG_CHD_H);
                 setPwm(1, BYG_CHA_L, BYG_CHA_H);
-                setPwm(0, BYG_CHB_L, BYG_CHD_H);
+                setPwm(0, BYG_CHB_L, BYG_CHB_H);
             }
         }
     }
@@ -224,9 +224,9 @@ namespace motor {
         if (!initialized) {
             initPCA9685()
         }
-        // 50hz: 20,000 us
+        // 200hz: 50,00 us
         let v_us = (degree * 11 + 500) // 0.5ms ~ 2.5ms
-        let value = v_us * 4095 / 10000
+        let value = v_us * 4095 / 5000
         setPwm(index + 7, 0, value)
     }
 
@@ -284,7 +284,7 @@ namespace motor {
         //setFreq(100);
         setStepper_42(index, Degree > 0);
         Degree = Math.abs(Degree);
-        basic.pause((500 * Degree) / 360);
+        basic.pause((250 * Degree) / 360);
         if (index == 1) {
             motorStop(1)
             motorStop(2)
@@ -331,7 +331,7 @@ namespace motor {
         //setFreq(100);
         setStepper_28(index, Degree > 0);
         Degree = Math.abs(Degree);
-        basic.pause((500 * Degree) / 360);
+        basic.pause((250 * Degree) / 360);
         if (index == 1) {
             motorStop(1)
             motorStop(2)
@@ -385,9 +385,9 @@ namespace motor {
         //setFreq(100);
 
         if (stepper == 1) {
-            timeout1 = 500 * Math.min(Degree1_, Degree2_) / 360;
-            timeout2 = 500 * (Degree1_ - Degree2_) / 360;
-            timeout3 = 500 * (Degree2_ - Degree1_) / 360;
+            timeout1 = 250 * Math.min(Degree1_, Degree2_) / 360;
+            timeout2 = 250 * (Degree1_ - Degree2_) / 360;
+            timeout3 = 250 * (Degree2_ - Degree1_) / 360;
             setStepper_42(1, Degree1 > 0);
             setStepper_42(2, Degree2 > 0);
         } else if (stepper == 2) {

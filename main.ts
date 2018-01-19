@@ -43,9 +43,9 @@ namespace motor {
     const BYG_CHD_H = 4095
 
     export enum Stepper { 
-        //% block="28BYJ"
-        Ste1 = 1,
         //% block="42BYGH"
+        Ste1 = 1,
+        //% block="28BYJ"
         Ste2 = 2
     }
 
@@ -213,26 +213,34 @@ namespace motor {
         setPwm(index + 7, 0, value)
     }
 
-    //% blockId=motor_stepper_degree block="Stepper 28BYJ-48|%index|degree %degree"
+      //% blockId=motor_stepper_degree_byg block="Stepper 28BYJ-48|%index|dir|%direction|degree|%degree"
     //% weight=90
-    export function stepperDegree_28(index: Steppers, degree: number): void {
+    export function stepperDegree_28(index: Steppers, direction: Dir, degree: number): void {
         if (!initialized) {
             initPCA9685()
         }
+        let Degree = Math.abs(degree);
+        Degree = Degree * direction;
         setFreq(100);
-        setStepper_28(index, degree > 0);
-        degree = Math.abs(degree);
-        basic.pause(5120 * degree / 360);
-        motorStopAll()
+        setStepper_28(index, Degree > 0);
+        Degree = Math.abs(Degree);
+        basic.pause((500 * Degree) / 360);
+        if (index == 1) {
+            motorStop(1)
+            motorStop(2)
+        }else{
+            motorStop(3)
+            motorStop(4)
+        }
         setFreq(50);
     }
 
 
-    //% blockId=motor_stepper_turn block="Stepper 28BYJ-48|%index|turn %turn"
+    //% blockId=motor_stepper_turn_byg block="Stepper 28BYJ-48|%index|dir|%direction|turn|%turn"
     //% weight=80
-    export function stepperTurn_28(index: Steppers, turn: number): void {
+    export function stepperTurn_28(index: Steppers, direction: Dir, turn: number): void {
         let degree = turn * 360;
-        stepperDegree_28(index, degree);
+        stepperDegree_28(index, direction, degree);
     }
 
 

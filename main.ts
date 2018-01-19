@@ -268,27 +268,41 @@ namespace motor {
             initPCA9685()
         }
         let Degree1 = Math.abs(degree1);
+        let Degree1_ = Degree1;
         Degree1 = Degree1 * direction1;
         let Degree2 = Math.abs(degree2);
+        let Degree2_ = Degree2;
         Degree2 = Degree2 * direction2;
+        let timeout1 = 500 * Math.min(Degree1_, Degree2_) / 360;
+        let timeout2 = 500 * (Degree1_ - Degree2_) / 360;
+        let timeout3 = 500 * (Degree2_ - Degree1_) / 360;
         setFreq(100);
-        setStepper_42(1, degree1 > 0);
-        setStepper_42(2, degree2 > 0);
-        degree1 = Math.abs(degree1);
-        degree2 = Math.abs(degree2);
+        setStepper_42(1, Degree1 > 0);
+        setStepper_42(2, Degree2 > 0);
+        basic.pause(timeout1);
 
-        basic.pause(500 * Math.min(degree1, degree2) / 360);
-        if (degree1 > degree2) {
+        if (Degree1_ > Degree2_) {
             motorStop(3); motorStop(4);
-            basic.pause(500 * (degree1 - degree2) / 360);
+            basic.pause(timeout2);
         } else {
             motorStop(1); motorStop(2);
-            basic.pause(500 * (degree2 - degree1) / 360);
+            basic.pause(timeout3);
         }
         motorStopAll()
         setFreq(50);
     }
 
+    //% blockId=robotbit_stepper_dual block="Dual Stepper(Trun)|M1_M2 %direction1|%trun1|M3_M4 %direction2|%trun2"
+    //% weight=89
+    export function stepperTurnDual_42(direction1: Dir, trun1: number, direction2: Dir,trun2: number): void {
+        if (!initialized) {
+            initPCA9685()
+        }
+        let degree1 = trun1 * 360;
+        let degree2 = trun2 * 360;
+            
+        stepperDegreeDual_42(direction1, degree1, direction2, degree1);
+    }
 
     /**
 	 * Execute a motor

@@ -213,7 +213,7 @@ namespace motor {
         setPwm(index + 7, 0, value)
     }
 
-      //% blockId=motor_stepper_degree_byg block="Stepper 28BYJ-48|%index|dir|%direction|degree|%degree"
+      //% blockId=motor_stepperDegree_28 block="Stepper 28BYJ-48|%index|dir|%direction|degree|%degree"
     //% weight=90
     export function stepperDegree_28(index: Steppers, direction: Dir, degree: number): void {
         if (!initialized) {
@@ -236,7 +236,7 @@ namespace motor {
     }
 
 
-    //% blockId=motor_stepper_turn_byg block="Stepper 28BYJ-48|%index|dir|%direction|turn|%turn"
+    //% blockId=motor_stepperTurn_28 block="Stepper 28BYJ-48|%index|dir|%direction|turn|%turn"
     //% weight=80
     export function stepperTurn_28(index: Steppers, direction: Dir, turn: number): void {
         let degree = turn * 360;

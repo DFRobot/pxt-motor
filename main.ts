@@ -42,6 +42,11 @@ namespace motor {
     const BYG_CHD_L = 2047
     const BYG_CHD_H = 4095
 
+    export enum Stepper { 
+        Ste1 = 1,
+        Ste2 = 2
+    }
+
     export enum Servos {
         S1 = 0x08,
         S2 = 0x07,
@@ -261,7 +266,7 @@ namespace motor {
     }
 
 
-    //% blockId=robotbit_stepperDegreeDual_42 block="Dual Stepper(Degree)|M1_M2 dir %direction1|trun %degree1|M3_M4 dir%direction2|trun %degree2"
+    //% blockId=robotbit_stepperDegreeDual_42 block="Dual Stepper(Degree)|M1_M2 dir %direction1|degree %degree1|M3_M4 dir%direction2|degree %degree2"
     //% weight=89
     export function stepperDegreeDual_42(direction1: Dir, degree1: number, direction2: Dir,degree2: number): void {
         if (!initialized) {
@@ -292,9 +297,9 @@ namespace motor {
         setFreq(50);
     }
 
-    //% blockId=robotbit_stepperTurnDual_42 block="Dual Stepper(Trun)|M1_M2 dir %direction1|trun %trun1|M3_M4 dir%direction2|trun %trun2"
+    //% blockId=robotbit_stepperTurnDual_42 block="Dual Stepper(Trun)|Stepper %stepper|M1_M2 dir %direction1|trun %trun1|M3_M4 dir%direction2|trun %trun2"
     //% weight=85
-    export function stepperTurnDual_42(direction1: Dir, trun1: number, direction2: Dir,trun2: number): void {
+    export function stepperTurnDual_42(stepper: Stepper, direction1: Dir, trun1: number, direction2: Dir,trun2: number): void {
         if (!initialized) {
             initPCA9685()
         }

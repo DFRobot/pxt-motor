@@ -48,9 +48,9 @@ namespace motor {
      * The user can choose the step motor model.
      */
     export enum Stepper { 
-        //% block="42BYGH"
+        //% block="42"
         Ste1 = 1,
-        //% block="28BYJ-48"
+        //% block="28"
         Ste2 = 2
     }
 
@@ -269,7 +269,7 @@ namespace motor {
      * M1_M2/M3_M4.
     */
     //% weight=80
-    //% blockId=motor_stepperDegree_42 block="Stepper 42BYGH|%index|dir|%direction|degree|%degree"
+    //% blockId=motor_stepperDegree_42 block="Stepper 42|%index|dir|%direction|degree|%degree"
     //% index.fieldEditor="gridpicker" index.fieldOptions.columns=2
     //% direction.fieldEditor="gridpicker" direction.fieldOptions.columns=2
     export function stepperDegree_42(index: Steppers, direction: Dir, degree: number): void {
@@ -300,7 +300,7 @@ namespace motor {
      * M1_M2/M3_M4.
     */
     //% weight=70
-    //% blockId=motor_stepperTurn_42 block="Stepper 42BYGH|%index|dir|%direction|turn|%turn"
+    //% blockId=motor_stepperTurn_42 block="Stepper 42|%index|dir|%direction|turn|%turn"
     //% index.fieldEditor="gridpicker" index.fieldOptions.columns=2
     //% direction.fieldEditor="gridpicker" direction.fieldOptions.columns=2
     export function stepperTurn_42(index: Steppers, direction: Dir, turn: number): void {
@@ -316,7 +316,7 @@ namespace motor {
      * M1_M2/M3_M4.
     */
     //% weight=60
-    //% blockId=motor_stepperDegree_28 block="Stepper 28BYJ-48|%index|dir|%direction|degree|%degree"
+    //% blockId=motor_stepperDegree_28 block="Stepper 28|%index|dir|%direction|degree|%degree"
     //% index.fieldEditor="gridpicker" index.fieldOptions.columns=2
     //% direction.fieldEditor="gridpicker" direction.fieldOptions.columns=2
     export function stepperDegree_28(index: Steppers, direction: Dir, degree: number): void {
@@ -347,7 +347,7 @@ namespace motor {
      * M1_M2/M3_M4.
     */
     //% weight=50
-    //% blockId=motor_stepperTurn_28 block="Stepper 28BYJ-48|%index|dir|%direction|turn|%turn"
+    //% blockId=motor_stepperTurn_28 block="Stepper 28|%index|dir|%direction|turn|%turn"
     //% index.fieldEditor="gridpicker" index.fieldOptions.columns=2
     //% direction.fieldEditor="gridpicker" direction.fieldOptions.columns=2
     export function stepperTurn_28(index: Steppers, direction: Dir, turn: number): void {

@@ -1,5 +1,5 @@
 {
-    "name": "DF-Driver",
+    "name": "motor",
     "version": "0.0.1",
     "description": "This is dc motor, stepper motor, steering gear library.",
     "license": "MIT",

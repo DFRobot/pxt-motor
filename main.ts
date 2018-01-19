@@ -261,7 +261,7 @@ namespace motor {
     }
 
 
-    //% blockId=robotbit_stepper_dual block="Dual Stepper(Degree)|M1_M2 %direction1|%degree1|M3_M4 %direction2|%degree2"
+    //% blockId=robotbit_stepperDegreeDual_42 block="Dual Stepper(Degree)|M1_M2 %direction1|%degree1|M3_M4 %direction2|%degree2"
     //% weight=89
     export function stepperDegreeDual_42(direction1: Dir, degree1: number, direction2: Dir,degree2: number): void {
         if (!initialized) {
@@ -292,7 +292,7 @@ namespace motor {
         setFreq(50);
     }
 
-    //% blockId=robotbit_stepper_dual block="Dual Stepper(Trun)|M1_M2 %direction1|%trun1|M3_M4 %direction2|%trun2"
+    //% blockId=robotbit_stepperTurnDual_42 block="Dual Stepper(Trun)|M1_M2 %direction1|%trun1|M3_M4 %direction2|%trun2"
     //% weight=85
     export function stepperTurnDual_42(direction1: Dir, trun1: number, direction2: Dir,trun2: number): void {
         if (!initialized) {

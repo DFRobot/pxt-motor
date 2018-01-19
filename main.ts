@@ -230,7 +230,7 @@ namespace motor {
 
 
 
-    //% blockId=motor_stepper_degree_byg block="Stepper 42BYGH1861A-C|%index|direction|%direction|degree|%degree"
+    //% blockId=motor_stepper_degree_byg block="Stepper 42BYGH|%index|dir|%direction|degree|%degree"
     //% weight=70
     export function stepperDegree_42(index: Steppers, direction: Dir, degree: number): void {
         if (!initialized) {
@@ -253,7 +253,7 @@ namespace motor {
     }
 
 
-    //% blockId=motor_stepper_turn_byg block="Stepper 42BYGH1861A-C|%index|direction|%direction|turn|%turn"
+    //% blockId=motor_stepper_turn_byg block="Stepper 42BYGH|%index|dir|%direction|turn|%turn"
     //% weight=60
     export function stepperTurn_42(index: Steppers, direction: Dir, turn: number): void {
         let degree = turn * 360;
@@ -261,7 +261,7 @@ namespace motor {
     }
 
 
-    //% blockId=robotbit_stepper_dual block="Dual Stepper(Degree) |M1_M2 %direction1| %degree1|M3_M4 %direction2| %degree2"
+    //% blockId=robotbit_stepper_dual block="Dual Stepper(Degree)|M1_M2 %direction1|%degree1|M3_M4 %direction2|%degree2"
     //% weight=89
     export function stepperDegreeDual_42(direction1: Dir, degree1: number, direction2: Dir,degree2: number): void {
         if (!initialized) {
@@ -297,7 +297,7 @@ namespace motor {
      * @param CCW: Counter clockwise direction
      * @param speed: 0~255
 	*/
-    //% blockId=motor_motor_run block="Motor|%index|direction %Dir|speed %speed"
+    //% blockId=motor_motor_run block="Motor|%index|dir %Dir|speed %speed"
     //% weight=50
     //% speed.min=0 speed.max=256
     //% name.fieldEditor="gridpicker" name.fieldOptions.columns=4

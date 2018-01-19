@@ -338,10 +338,10 @@ namespace motor {
      * M1_M2/M3_M4.
     */
     //% weight=50
-    //% blockId=motor_stepperTurn_28 block="Stepper 28BYJ-48|%index|dir|%direction|turn|%turn|.%turn1"
+    //% blockId=motor_stepperTurn_28 block="Stepper 28BYJ-48|%index|dir|%direction|turn|%turn"
     //% index.fieldEditor="gridpicker" index.fieldOptions.columns=2
     //% direction.fieldEditor="gridpicker" direction.fieldOptions.columns=2
-    export function stepperTurn_28(index: Steppers, direction: Dir, turn: number, turn1: number): void {
+    export function stepperTurn_28(index: Steppers, direction: Dir, turn: number): void {
         let degree = turn * 360;
         stepperDegree_28(index, direction, degree);
     }

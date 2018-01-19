@@ -196,7 +196,6 @@ namespace motor {
 
     //% blockId=motor_servo block="Servo|%index|degree %degree"
     //% weight=100
-    //% blockGap=50
     //% degree.min=0 degree.max=180
     //% name.fieldEditor="gridpicker" name.fieldOptions.columns=4
     export function servo(index: Servos, degree: number): void {
@@ -368,9 +367,6 @@ namespace motor {
 
     //% blockId=motor_motorStop block="Motor stop|%index"
     //% weight=20
-    //% blockGap=50
-    //% degree.min=0 degree.max=180
-    //% name.fieldEditor="gridpicker" name.fieldOptions.columns=4
     function motorStop(index: Motors) {
         setPwm((4 - index) * 2, 0, 0);
         setPwm((4 - index) * 2 + 1, 0, 0);
@@ -379,7 +375,6 @@ namespace motor {
 
     //% blockId=motor_stop_all block="Motor Stop All"
     //% weight=10
-    //% blockGap=50
     export function motorStopAll(): void {
         for (let idx = 1; idx <= 4; idx++) {
             motorStop(idx);

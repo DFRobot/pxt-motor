@@ -3,7 +3,7 @@
  */
 //% weight=10 color=#DF6721 icon="\uf013" block="DF-Driver"
 namespace motor {
-    const PCA9685_ADDRESS = 0x67
+    const PCA9685_ADDRESS = 0x40
     const MODE1 = 0x00
     const MODE2 = 0x01
     const SUBADR1 = 0x02
@@ -129,9 +129,9 @@ namespace motor {
         // Constrain the frequency
         let prescaleval = 25000000;
         prescaleval /= 4096;
-        prescaleval /= freq;
+        prescaleval /= (freq*0.92);
         prescaleval -= 1;
-        let prescale = prescaleval; //Math.Floor(prescaleval + 0.5);
+        let prescale = Math.Floor(prescaleval + 0.5);
         let oldmode = i2cRead(PCA9685_ADDRESS, MODE1);
         let newmode = (oldmode & 0x7F) | 0x10; // sleep
         i2cWrite(PCA9685_ADDRESS, MODE1, newmode); // go to sleep

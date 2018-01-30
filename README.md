@@ -1,8 +1,16 @@
 # DF-Driver
 
 Micro:bit motor drive expansion board.
+---------------------------------------------------------
 
-## Feature
+## Table of Contents
+
+* [Summary](#summary)
+* [Methods Blocks](#Methods Blocks)
+* [License](#License)
+* [Supported targets](#Supported targets)
+
+## Summary
 
 Micro: bit motor driven expansion board is not only expanded the motor drive, in the integration of this extended board four motor driven, 2 road, on the basis of stepper motor driver, also raises the additional 8 road steering gear interface, IO port, 2 road 9 I2C interface.
 The motor adopts the interface mode of large current, and the steering machine, I2C and IO port all use Gravity standard interface to support a large number of modules and sensors.

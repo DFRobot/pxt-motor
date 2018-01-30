@@ -1,17 +1,17 @@
 # DF-Driver
 
-This is dc motor, stepper motor, steering gear library.
+Micro:bit motor drive expansion board.
 
-## TODO
+## Feature
 
-- [ ] Add a reference for your blocks here
-- [ ] Add "icon.png" image (300x200) in the root folder
-- [ ] Add "- beta" to the GitHub project description if you are still iterating it.
-- [ ] Turn on your automated build on https://travis-ci.org
-- [ ] Use "pxt bump" to create a tagged release on GitHub
-- [ ] Get your package reviewed and approved https://makecode.microbit.org/packages/approval
+Micro: bit motor driven expansion board is not only expanded the motor drive, in the integration of this extended board four motor driven, 2 road, on the basis of stepper motor driver, also raises the additional 8 road steering gear interface, IO port, 2 road 9 I2C interface.
+The motor adopts the interface mode of large current, and the steering machine, I2C and IO port all use Gravity standard interface to support a large number of modules and sensors.
+The expansion board USES 3.5v ~ 5.5v power supply, 3.5mm plug and wiring two power interface modes.It has the characteristics of wide range of voltage adaption, large number of ports, compact size, plug and play, convenience and so on.
 
-Read more at https://makecode.microbit.org/packages/build-your-own
+## Methods Blocks
+### Servo
+![image](https://github.com/DFRobot/pxt-motor/blob/master/image/1.png)
+
 
 ## License
 

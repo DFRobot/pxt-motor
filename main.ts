@@ -380,7 +380,8 @@ namespace motor {
 
         if (stepper == 1) {  // 42 stepper
             if (Degree1 == 0 && Degree2 == 0) {
-                return
+                setStepper_42(0x01, direction1 > 0);
+                setStepper_42(0x02, direction2 > 0);
             } else if ((Degree1 == 0) && (Degree2 > 0)) { 
                 timeout1 = (50000 * Degree2) / (360 * 100)
                 setStepper_42(0x01, direction1 > 0);

@@ -121,7 +121,7 @@ namespace motor {
 
     function initPCA9685(): void {
         i2cWrite(PCA9685_ADDRESS, MODE1, 0x00)
-        setFreq(50);
+        setFreq(100);
         initialized = true
     }
 
@@ -226,9 +226,9 @@ namespace motor {
         if (!initialized) {
             initPCA9685()
         }
-        // 200hz: 50,00 us
+        // 100hz
         let v_us = (degree * 10 + 600) // 0.6ms ~ 2.4ms
-        let value = v_us * 4095 / 20000
+        let value = v_us * 4095 / (1000000 / 100)
         setPwm(index + 7, 0, value)
     }
 
@@ -278,15 +278,15 @@ namespace motor {
         if (!initialized) {
             initPCA9685()
         }
+        // let Degree = Math.abs(degree);
+        // Degree = Degree * direction;
+        //setFreq(100);
+        setStepper_42(index, direction > 0);
         if (degree == 0) { 
             return;
         }
         let Degree = Math.abs(degree);
-        Degree = Degree * direction;
-        //setFreq(100);
-        setStepper_42(index, Degree > 0);
-        Degree = Math.abs(Degree);
-        basic.pause((1000 * Degree) / 360);
+        basic.pause( (50000 * Degree) / (360 * 100) );  //100hz
         if (index == 1) {
             motorStop(1)
             motorStop(2)

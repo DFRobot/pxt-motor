@@ -222,7 +222,7 @@ namespace motor {
     //% weight=100
     //% degree.min=0 degree.max=180
     //% index.fieldEditor="gridpicker" index.fieldOptions.columns=4
-    export function servo(index: Servos, degree: number): void {
+    export function servoWzt(index: Servos, degree: number): void {
         if (!initialized) {
             initPCA9685()
         }

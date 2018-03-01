@@ -121,7 +121,7 @@ namespace motor {
 
     function initPCA9685(): void {
         i2cWrite(PCA9685_ADDRESS, MODE1, 0x00)
-        setFreq(100);
+        setFreq(50);
         initialized = true
     }
 
@@ -374,7 +374,6 @@ namespace motor {
         }
         let timeout1 = 0;
         let timeout2 = 0;
-        let timeout3 = 0;
         let Degree1 = Math.abs(degree1);
         let Degree2 = Math.abs(degree2);
 

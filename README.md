@@ -5,7 +5,7 @@ Micro:bit motor drive expansion board.
 
 ## Table of Contents
 
-* [Summary](#url)
+* [URL](#url)
 * [Summary](#summary)
 * [Blocks](#blocks)
 * [License](#license)

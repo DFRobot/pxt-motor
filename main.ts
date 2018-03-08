@@ -471,7 +471,7 @@ namespace motor {
      */
     //% blockId=max6675_temperature block="max6675 temperature|%pin"
     //% parts="max6675"
-    //% trackArgs=0 advanced=true
+    //% trackArgs=0
     export function max6675Temperature(pin: DigitalPin): number {
         pins.setPull(pin, PinPullMode.PullNone);
         pins.digitalWritePin(pin, 0);

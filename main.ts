@@ -1,7 +1,7 @@
 /**
  *This is DFRobot:motor user motor and steering control function.
  */
-//% weight=10 color=#DF6721 icon="\uf013" block="DF-Driver"
+//% weight=10 color=#DF6721 icon="\uf013" block="IKBIT"
 namespace motor {
     const PCA9685_ADDRESS = 0x40
     const MODE1 = 0x00
@@ -222,7 +222,7 @@ namespace motor {
     //% weight=100
     //% degree.min=0 degree.max=180
     //% index.fieldEditor="gridpicker" index.fieldOptions.columns=4
-    export function servo(index: Servos, degree: number): void {
+    export function servoWzt(index: Servos, degree: number): void {
         if (!initialized) {
             initPCA9685()
         }
@@ -464,6 +464,29 @@ namespace motor {
         for (let idx = 1; idx <= 4; idx++) {
             motorStop(idx);
         }
+    }
+    /**
+     * Returns the temperate measured in C provided by the MAX6675 connected to a temperature probe.
+     */
+    //% blockId=max6675_temperature block="max6675 temperature|%pin"
+    //% parts="max6675"
+    //% trackArgs=0
+    export function max6675Temperature(pin: DigitalPin): number {
+        pins.setPull(pin, PinPullMode.PullNone);
+        pins.digitalWritePin(pin, 0);
+        basic.pause(1);
+        let highByte = pins.spiWrite(0);
+        let lowByte = pins.spiWrite(0);
+        pins.digitalWritePin(pin, 1);
+
+        let temp = 0;
+        if (lowByte & (1 << 2)) {
+            temp = -1000;
+        } else {
+            let value = (highByte << 5 | lowByte >> 3);
+            temp = (value / 4);
+        }
+        return temp;
     }
 }
 

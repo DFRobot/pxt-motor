@@ -46,7 +46,7 @@ The expansion board USES 3.5v ~ 5.5v power supply, 3.5mm plug and wiring two pow
 
 ## License
 
-MIT
+GNU
 
 ## Supported targets
 

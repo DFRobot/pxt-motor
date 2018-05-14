@@ -173,18 +173,6 @@ namespace motor {
     function setStepper_28(index: number, dir: boolean): void {
         if (index == 1) {
             if (dir) {
-                setPwm(0, STP_CHA_L, STP_CHA_H);
-                setPwm(2, STP_CHB_L, STP_CHB_H);
-                setPwm(1, STP_CHC_L, STP_CHC_H);
-                setPwm(3, STP_CHD_L, STP_CHD_H);
-            } else {
-                setPwm(3, STP_CHA_L, STP_CHA_H);
-                setPwm(1, STP_CHB_L, STP_CHB_H);
-                setPwm(2, STP_CHC_L, STP_CHC_H);
-                setPwm(0, STP_CHD_L, STP_CHD_H);
-            }
-        } else {
-            if (dir) {
                 setPwm(4, STP_CHA_L, STP_CHA_H);
                 setPwm(6, STP_CHB_L, STP_CHB_H);
                 setPwm(5, STP_CHC_L, STP_CHC_H);
@@ -194,6 +182,18 @@ namespace motor {
                 setPwm(5, STP_CHB_L, STP_CHB_H);
                 setPwm(6, STP_CHC_L, STP_CHC_H);
                 setPwm(4, STP_CHD_L, STP_CHD_H);
+            }
+        } else {
+            if (dir) {
+                setPwm(0, STP_CHA_L, STP_CHA_H);
+                setPwm(2, STP_CHB_L, STP_CHB_H);
+                setPwm(1, STP_CHC_L, STP_CHC_H);
+                setPwm(3, STP_CHD_L, STP_CHD_H);
+            } else {
+                setPwm(3, STP_CHA_L, STP_CHA_H);
+                setPwm(1, STP_CHB_L, STP_CHB_H);
+                setPwm(2, STP_CHC_L, STP_CHC_H);
+                setPwm(0, STP_CHD_L, STP_CHD_H);
             }
         }
     }
@@ -254,7 +254,7 @@ namespace motor {
     */
     //% weight=90
     //% blockId=motor_MotorRun block="Motor|%index|dir|%Dir|speed|%speed"
-    //% speed.min=0 speed.max=256
+    //% speed.min=0 speed.max=255
     //% index.fieldEditor="gridpicker" index.fieldOptions.columns=2
     //% direction.fieldEditor="gridpicker" direction.fieldOptions.columns=2
     export function MotorRun(index: Motors, direction:Dir, speed: number): void {
@@ -428,7 +428,40 @@ namespace motor {
                 motorStop(1); motorStop(2);
             } 
         } else if (stepper == 2) {
-            //
+            if (Degree1 == 0 && Degree2 == 0) {
+                setStepper_28(0x01, direction1 > 0);
+                setStepper_28(0x02, direction2 > 0);
+            } else if ((Degree1 == 0) && (Degree2 > 0)) { 
+                timeout1 = (50000 * Degree2) / (360 * 100)
+                setStepper_28(0x01, direction1 > 0);
+                setStepper_28(0x02, direction2 > 0);
+                basic.pause(timeout1);
+                motorStop(3); motorStop(4);
+            } else if ((Degree2 == 0) && (Degree1 > 0)) { 
+                timeout1 = (50000 * Degree1) / (360 * 100)
+                setStepper_28(0x01, direction1 > 0);
+                setStepper_28(0x02, direction2 > 0);
+                basic.pause(timeout1);
+                motorStop(1); motorStop(2);
+            } else if ((Degree2 > Degree1)) { 
+                timeout1 = (50000 * Degree1) / (360 * 100)
+                timeout2 = (50000 * (Degree2 - Degree1)) / (360 * 100)
+                setStepper_28(0x01, direction1 > 0);
+                setStepper_28(0x02, direction2 > 0);
+                basic.pause(timeout1);
+                motorStop(1); motorStop(2);
+                basic.pause(timeout2);
+                motorStop(3); motorStop(4);
+            }  else if ((Degree2 < Degree1)) { 
+                timeout1 = (50000 * Degree2) / (360 * 100)
+                timeout2 = (50000 * (Degree1 - Degree2)) / (360 * 100)
+                setStepper_28(0x01, direction1 > 0);
+                setStepper_28(0x02, direction2 > 0);
+                basic.pause(timeout1);
+                motorStop(3); motorStop(4);
+                basic.pause(timeout2);
+                motorStop(1); motorStop(2);
+            } 
         } else { 
             //
         }
@@ -450,9 +483,9 @@ namespace motor {
         let degree2 = trun2 * 360;
         
         if (stepper == 1) {
-            stepperDegreeDual_42(1, direction1, degree1, direction2, degree1);
+            stepperDegreeDual_42(stepper, direction1, degree1, direction2, degree2);
         } else if (stepper == 2) {
-            //stepperDegreeDual_28(direction1, degree1, direction2, degree1);
+            stepperDegreeDual_42(stepper, direction1, degree1, direction2, degree2);
         } else { 
 
         }

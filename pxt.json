@@ -1,7 +1,7 @@
 {
-    "name": "Uitbreidingsbord",
+    "name": "motor",
     "version": "0.0.1",
-    "description": "Hiermee kun je servo motoren en stappenmotoren aansturen. Ook kun je de GPIO pinnen gebruiken.",
+    "description": "This is dc motor, stepper motor, steering gear library.",
     "license": "GNU",
     "dependencies": {
         "core": "*",
@@ -10,7 +10,7 @@
     "files": [
         "README.md",
         "main.ts",
-        "_locales/zh/motor-strings.json"
+        "_locales/zh/motor-strings.json",
 		"_locales/nl/motor-strings.json"
     ],
     "testFiles": [

@@ -11,7 +11,7 @@ Micro:bit motor drive expansion board.
 * [License](#license)
 
 ## URL
-project URL:  ```https://github.com/jeromekeNL/pxt-motor```
+project URL:  ```https://github.com/DFRobot/pxt-motor```
 
 ## Summary
 Micro: bit motor driven expansion board is not only expanded the motor drive, in the integration of this extended board four motor driven, 2 road, on the basis of stepper motor driver, also raises the additional 8 road steering gear interface, IO port, 2 road 9 I2C interface.

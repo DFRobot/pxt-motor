@@ -16,7 +16,7 @@
 /**
  *This is DFRobot:motor user motor and steering control function.
  */
-//% weight=10 color=#DF6721 icon="\uf013" block="DF-Driver"
+//% weight=10 color=#DF6721 icon="\uf013" block="Robot-arm"
 namespace motor {
     const PCA9685_ADDRESS = 0x40
     const MODE1 = 0x00
@@ -242,8 +242,9 @@ namespace motor {
             initPCA9685()
         }
         // 50hz = 20ms
-        //let v_us = (degree * 1800 / 180 + 600)  // 0.6ms ~ 2.4ms
-		let v_us = (degree * 1000 / 180 +1000)    // 1.0ms ~ 2.0ms
+        //let v_us = (degree * 1800 / 180 + 600)  // 0.6ms ~ 2.4ms 
+		let v_us = (degree * 3000 / 180 + 0)      // 0ms ~ 3.0ms
+		//let v_us = (degree * 1000 / 180 +1000)  // 1.0ms ~ 2.0ms
         let value = v_us * 4095 / 20000           //20ms
         setPwm(index + 7, 0, value)
     }

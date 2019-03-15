@@ -1,7 +1,7 @@
 {
-    "name": "motor",
+    "name": "robot-arm",
     "version": "0.0.1",
-    "description": "This is dc motor, stepper motor, steering gear library.",
+    "description": "Deze uitbreiding stuurt de robot-arm aan",
     "license": "GNU",
     "dependencies": {
         "core": "*",

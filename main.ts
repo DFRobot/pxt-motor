@@ -249,7 +249,7 @@ namespace motor {
         setPwm(index + 7, 0, value)
     }
 
-    /**
+    /**\
 	 * Execute a motor
      * M1~M4.
      * speed(0~255).

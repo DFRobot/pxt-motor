@@ -1,4 +1,4 @@
-# DF-Driver
+# Robot-arm
 
 Micro:bit motor drive expansion board.
 ---------------------------------------------------------

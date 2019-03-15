@@ -1,0 +1,14 @@
+{
+    "motor.Dir.CW|block": "正转",
+    "motor.Dir.CCW|block": "反转",
+    "motor.servo|block": "舵机|%index|角度|%degree",
+    "motor.MotorRun|block": "电机|%index|方向|%Dir|速度|%speed",
+    "motor.stepperDegree_42|block": "步进 42|%index|方向|%direction|角度|%degree",
+    "motor.stepperTurn_42|block": "步进 42|%index|方向|%direction|圈数|%turn",
+    "motor.stepperDegree_28|block": "步进 28|%index|方向|%direction|角度|%degree",
+    "motor.stepperTurn_28|block": "步进 28|%index|方向|%direction|圈数|%turn",
+    "motor.stepperDegreeDual_42|block": "双步进 %stepper|M1_M2 方向 %direction1|角度 %degree1|M3_M4 方向 %direction2|角度 %degree2",
+    "motor.stepperTurnDual_42|block": "双步进 %stepper|M1_M2 方向 %direction1|圈数 %trun1|M3_M4 方向 %direction2|圈数 %trun2",
+    "motor.motorStop|block": "电机 停止|%index",
+    "motor.motorStopAll|block": "停止所有电机"
+}

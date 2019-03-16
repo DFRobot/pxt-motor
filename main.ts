@@ -256,7 +256,7 @@ namespace motor {
      * 0.1 ~ 3.5 ms°.
 	*/
     //% blockId=motor_servoTest block="Servo|%index|degree|%degree|pwidth0|%pwidth0|pwidth180|%pwidth180"
-    //% weight=99
+    //% weight=90
 	//% degree.min=0 degree.max=180
 	//% pwidth0.min=100 pwidth0.max=3500
 	//% pwidth180.min=100 pwidth180.max=3500
@@ -279,7 +279,7 @@ namespace motor {
      * M1~M4.
      * speed(0~255).
     */
-    //% weight=90
+    //% weight=89
     //% blockId=motor_MotorRunExp block="Motor|%index|dir|%Dir|speed|%speed"
     //% speed.min=0 speed.max=255
     //% index.fieldEditor="gridpicker" index.fieldOptions.columns=2

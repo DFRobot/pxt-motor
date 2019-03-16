@@ -8,7 +8,6 @@
         "radio": "*"
     },
     "files": [
-        "README.md",
         "main.ts",
         "_locales/zh/motor-strings.json",
 		"_locales/nl/motor-strings.json"

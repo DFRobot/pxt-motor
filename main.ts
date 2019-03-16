@@ -255,7 +255,7 @@ namespace motor {
      * S1~S8.
      * 0.1 ~ 3.5 ms°.
 	*/
-    //% blockId=motor_servo block="Servo|%index|degree|%degree|pwidth0|%pwidth0|pwidth180|%pwidth180"
+    //% blockId=motor_servoTest block="Servo|%index|degree|%degree|pwidth0|%pwidth0|pwidth180|%pwidth180"
     //% weight=99
 	//% degree.min=0 degree.max=180
 	//% pwidth0.min=100 pwidth0.max=3500

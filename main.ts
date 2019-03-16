@@ -250,6 +250,30 @@ namespace motor {
         setPwm(index + 7, 0, value)
     }
 
+    /**
+	 * Test Pulse width.
+     * S1~S8.
+     * 0.1 ~ 3.5 ms°.
+	*/
+    //% blockId=motor_servo block="Servo|%index|degree|%degree|pwidth0|%pwidth0|pwidth180|%pwidth180"
+    //% weight=99
+	//% degree.min=0 degree.max=180
+	//% pwidth0.min=100 pwidth0.max=3500
+	//% pwidth180.min=100 pwidth180.max=3500
+    //% index.fieldEditor="gridpicker" index.fieldOptions.columns=4
+    export function servo(index: Servos, degree: number): void {
+        if (!initialized) {
+            initPCA9685()
+        }
+        // 50hz = 20ms
+		// 2.0ms = middle
+        //let v_us = (degree * 1800 / 180 + 600)  // 0.6ms ~ 2.4ms 
+		let v_us = (degree * pwidth180 / 180 + pwidth0)      // 0.75ms ~ 3.0ms
+		//let v_us = (degree * 1000 / 180 +1000)  // 1.0ms ~ 2.0ms
+        let value = v_us * 4095 / 20000           //20ms - 12bit
+        setPwm(index + 7, 0, value)
+    }
+
     /**\
 	 * Execute a motor
      * M1~M4.

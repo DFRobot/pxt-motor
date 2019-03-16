@@ -242,34 +242,8 @@ namespace motor {
             initPCA9685()
         }
         // 50hz = 20ms
-		// 2.0ms = middle
-        //let v_us = (degree * 1800 / 180 + 600)  // 0.6ms ~ 2.4ms 
-		let v_us = (degree * 2000 / 180 + 1500)      // 0.75ms ~ 3.0ms
-		//let v_us = (degree * 1000 / 180 +1000)  // 1.0ms ~ 2.0ms
-        let value = v_us * 4095 / 20000           //20ms - 12bit
-        setPwm(index + 7, 0, value)
-    }
-
-    /**
-	 * Test Pulse width.
-     * S1~S8.
-     * 0.1 ~ 3.5 ms°.
-	*/
-    //% blockId=motor_servoTest block="Servo|%index|degree|%degree|pwidth0|%pwidth0|pwidth180|%pwidth180"
-    //% weight=90
-	//% degree.min=0 degree.max=180
-	//% pwidth0.min=100 pwidth0.max=3500
-	//% pwidth180.min=100 pwidth180.max=3500
-    //% index.fieldEditor="gridpicker" index.fieldOptions.columns=4
-    export function servoTest(index: Servos, degree: number, pwidth0: number, pwidth180: number): void {
-        if (!initialized) {
-            initPCA9685()
-        }
-        // 50hz = 20ms
-		// 2.0ms = middle
-        //let v_us = (degree * 1800 / 180 + 600)  // 0.6ms ~ 2.4ms 
-		let v_us = (degree * pwidth180 / 180 + pwidth0)      // 0.75ms ~ 3.0ms
-		//let v_us = (degree * 1000 / 180 +1000)  // 1.0ms ~ 2.0ms
+        //let v_us = (degree * 1000 / 180 +1000)  // 1.0ms ~ 2.0ms 
+		let v_us = (degree * 2000 / 180 + 500)    // 0.5ms ~ 2.5ms
         let value = v_us * 4095 / 20000           //20ms - 12bit
         setPwm(index + 7, 0, value)
     }
@@ -498,7 +472,7 @@ namespace motor {
 	 * Two parallel stepper motors are executed simultaneously(Turn).
     */
     //% weight=30
-    //% blockId=motor_stepperTurnDual_42 block="Dual Stepper %stepper|M1_M2 dir %direction1|trun %trun1|M3_M4 dir %direction2|trun %trun2"
+    //% blockId=motor_stepperTurnDual_42 block="Dual Stepper %stepper|M1_M2 dir %direction1|turn %trun1|M3_M4 dir %direction2|turn %trun2"
     //% stepper.fieldEditor="gridpicker" stepper.fieldOptions.columns=2
     //% direction1.fieldEditor="gridpicker" direction1.fieldOptions.columns=2
     //% direction2.fieldEditor="gridpicker" direction2.fieldOptions.columns=2

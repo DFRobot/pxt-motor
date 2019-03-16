@@ -261,7 +261,7 @@ namespace motor {
 	//% pwidth0.min=100 pwidth0.max=3500
 	//% pwidth180.min=100 pwidth180.max=3500
     //% index.fieldEditor="gridpicker" index.fieldOptions.columns=4
-    export function servo(index: Servos, degree: number): void {
+    export function servoTest(index: Servos, degree: number, pwidth0: number, pwidth180: number): void {
         if (!initialized) {
             initPCA9685()
         }

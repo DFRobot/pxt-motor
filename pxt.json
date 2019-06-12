@@ -4,8 +4,7 @@
     "description": "This is dc motor, stepper motor, steering gear library.",
     "license": "GNU",
     "dependencies": {
-        "core": "*",
-        "radio": "*"
+        "core": "*"
     },
     "files": [
         "README.md",

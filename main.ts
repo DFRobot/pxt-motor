@@ -16,7 +16,7 @@
 /**
  *This is DFRobot:motor user motor and steering control function.
  */
-//% weight=10 color=#DF6721 icon="\uf013" block="DF-Driver"
+//% weight=10 color=#DF6721 icon="\uf013" block="Robot-arm"
 namespace motor {
     const PCA9685_ADDRESS = 0x40
     const MODE1 = 0x00
@@ -241,19 +241,20 @@ namespace motor {
         if (!initialized) {
             initPCA9685()
         }
-        // 100hz
-        let v_us = (degree * 10 + 600) // 0.6ms ~ 2.4ms
-        let value = v_us * 4095 / (1000000 / 100)
+        // 50hz = 20ms
+        //let v_us = (degree * 1000 / 180 +1000)  // 1.0ms ~ 2.0ms 
+		let v_us = (degree * 2000 / 180 + 500)    // 0.5ms ~ 2.5ms
+        let value = v_us * 4095 / 20000           //20ms - 12bit
         setPwm(index + 7, 0, value)
     }
 
-    /**
+    /**\
 	 * Execute a motor
      * M1~M4.
      * speed(0~255).
     */
-    //% weight=90
-    //% blockId=motor_MotorRun block="Motor|%index|dir|%Dir|speed|%speed"
+    //% weight=89
+    //% blockId=motor_MotorRunExp block="Motor|%index|dir|%Dir|speed|%speed"
     //% speed.min=0 speed.max=255
     //% index.fieldEditor="gridpicker" index.fieldOptions.columns=2
     //% direction.fieldEditor="gridpicker" direction.fieldOptions.columns=2
@@ -471,7 +472,7 @@ namespace motor {
 	 * Two parallel stepper motors are executed simultaneously(Turn).
     */
     //% weight=30
-    //% blockId=motor_stepperTurnDual_42 block="Dual Stepper %stepper|M1_M2 dir %direction1|trun %trun1|M3_M4 dir %direction2|trun %trun2"
+    //% blockId=motor_stepperTurnDual_42 block="Dual Stepper %stepper|M1_M2 dir %direction1|turn %trun1|M3_M4 dir %direction2|turn %trun2"
     //% stepper.fieldEditor="gridpicker" stepper.fieldOptions.columns=2
     //% direction1.fieldEditor="gridpicker" direction1.fieldOptions.columns=2
     //% direction2.fieldEditor="gridpicker" direction2.fieldOptions.columns=2
@@ -496,7 +497,7 @@ namespace motor {
 	 * Stop the dc motor.
     */
     //% weight=20
-    //% blockId=motor_motorStop block="Motor stop|%index"
+    //% blockId=motor_motorStopExp block="Motor stop|%index"
     //% index.fieldEditor="gridpicker" index.fieldOptions.columns=2 
     export function motorStop(index: Motors) {
         setPwm((4 - index) * 2, 0, 0);
@@ -507,7 +508,7 @@ namespace motor {
 	 * Stop all motors
     */
     //% weight=10
-    //% blockId=motor_motorStopAll block="Motor Stop All"
+    //% blockId=motor_motorStopAllExp block="Motor Stop All"
     export function motorStopAll(): void {
         for (let idx = 1; idx <= 4; idx++) {
             motorStop(idx);

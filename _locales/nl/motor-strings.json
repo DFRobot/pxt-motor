@@ -1,0 +1,14 @@
+{
+    "motor.Dir.CW|block": "Rechtsom",
+    "motor.Dir.CCW|block": "Linksom",
+    "motor.servo|block": "Servo|%index|graden|%degree",
+    "motor.MotorRun|block": "Motor|%index|richting|%Dir|snelheid|%speed",
+    "motor.stepperDegree_42|block": "Stappenmotor 42|%index|richting|%direction|graden|%degree",
+    "motor.stepperTurn_42|block": "Stappenmotor 42|%index|richting|%direction|draaien|%turn",
+    "motor.stepperDegree_28|block": "Stappenmotor 28|%index|richting|%direction|graden|%degree",
+    "motor.stepperTurn_28|block": "Stappenmotor 28|%index|richting|%direction|draaien|%turn",
+    "motor.stepperDegreeDual_42|block": "Dubbele stappenmotor %stepper|M1_M2 richting %direction1|graden %degree1|M3_M4 richting %direction2|graden %degree2",
+    "motor.stepperTurnDual_42|block": "Dubbele stappenmotor %stepper|M1_M2 richting %direction1|draaien %trun1|M3_M4 richting %direction2|draaien %trun2",
+    "motor.motorStop|block": "Stop motor|%index",
+    "motor.motorStopAll|block": "Stop alle motoren"
+}

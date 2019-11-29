@@ -9,7 +9,7 @@
  * @copyright	GNU Lesser General Public License
  *
  * @author [email](1035868977@qq.com)
- * @version  V1.0
+ * @version  V1.0.0
  * @date  2018-03-20
  */
 
@@ -62,7 +62,7 @@ namespace motor {
     /**
      * The user can choose the step motor model.
      */
-    export enum Stepper { 
+    export enum Stepper {
         //% block="42"
         Ste1 = 1,
         //% block="28"
@@ -241,9 +241,9 @@ namespace motor {
         if (!initialized) {
             initPCA9685()
         }
-        // 100hz
-        let v_us = (degree * 10 + 600) // 0.6ms ~ 2.4ms
-        let value = v_us * 4095 / (1000000 / 100)
+        // 50hz
+        let v_us = (degree * 1800 / 180 + 600) // 0.6ms ~ 2.4ms
+        let value = v_us * 4096 / 20000
         setPwm(index + 7, 0, value)
     }
 
@@ -257,7 +257,7 @@ namespace motor {
     //% speed.min=0 speed.max=255
     //% index.fieldEditor="gridpicker" index.fieldOptions.columns=2
     //% direction.fieldEditor="gridpicker" direction.fieldOptions.columns=2
-    export function MotorRun(index: Motors, direction:Dir, speed: number): void {
+    export function MotorRun(index: Motors, direction: Dir, speed: number): void {
         if (!initialized) {
             initPCA9685()
         }
@@ -270,8 +270,8 @@ namespace motor {
         }
         if (index > 4 || index <= 0)
             return
-        let pn = (4-index) * 2
-        let pp = (4-index) * 2 + 1 
+        let pn = (4 - index) * 2
+        let pp = (4 - index) * 2 + 1
         if (speed >= 0) {
             setPwm(pp, 0, speed)
             setPwm(pn, 0, 0)
@@ -297,15 +297,15 @@ namespace motor {
         // Degree = Degree * direction;
         //setFreq(100);
         setStepper_42(index, direction > 0);
-        if (degree == 0) { 
+        if (degree == 0) {
             return;
         }
         let Degree = Math.abs(degree);
-        basic.pause( (50000 * Degree) / (360 * 100) );  //100hz
+        basic.pause((50000 * Degree) / (360 * 100));  //100hz
         if (index == 1) {
             motorStop(1)
             motorStop(2)
-        }else{
+        } else {
             motorStop(3)
             motorStop(4)
         }
@@ -321,7 +321,7 @@ namespace motor {
     //% index.fieldEditor="gridpicker" index.fieldOptions.columns=2
     //% direction.fieldEditor="gridpicker" direction.fieldOptions.columns=2
     export function stepperTurn_42(index: Steppers, direction: Dir, turn: number): void {
-        if (turn == 0) { 
+        if (turn == 0) {
             return;
         }
         let degree = turn * 360;
@@ -340,7 +340,7 @@ namespace motor {
         if (!initialized) {
             initPCA9685()
         }
-        if (degree == 0) { 
+        if (degree == 0) {
             return;
         }
         let Degree = Math.abs(degree);
@@ -352,7 +352,7 @@ namespace motor {
         if (index == 1) {
             motorStop(1)
             motorStop(2)
-        }else{
+        } else {
             motorStop(3)
             motorStop(4)
         }
@@ -368,7 +368,7 @@ namespace motor {
     //% index.fieldEditor="gridpicker" index.fieldOptions.columns=2
     //% direction.fieldEditor="gridpicker" direction.fieldOptions.columns=2
     export function stepperTurn_28(index: Steppers, direction: Dir, turn: number): void {
-        if (turn == 0) { 
+        if (turn == 0) {
             return;
         }
         let degree = turn * 360;
@@ -383,7 +383,7 @@ namespace motor {
     //% stepper.fieldEditor="gridpicker" stepper.fieldOptions.columns=2
     //% direction1.fieldEditor="gridpicker" direction1.fieldOptions.columns=2
     //% direction2.fieldEditor="gridpicker" direction2.fieldOptions.columns=2
-    export function stepperDegreeDual_42(stepper: Stepper, direction1: Dir, degree1: number, direction2: Dir,degree2: number): void {
+    export function stepperDegreeDual_42(stepper: Stepper, direction1: Dir, degree1: number, direction2: Dir, degree2: number): void {
         if (!initialized) {
             initPCA9685()
         }
@@ -396,19 +396,19 @@ namespace motor {
             if (Degree1 == 0 && Degree2 == 0) {
                 setStepper_42(0x01, direction1 > 0);
                 setStepper_42(0x02, direction2 > 0);
-            } else if ((Degree1 == 0) && (Degree2 > 0)) { 
+            } else if ((Degree1 == 0) && (Degree2 > 0)) {
                 timeout1 = (50000 * Degree2) / (360 * 100)
                 setStepper_42(0x01, direction1 > 0);
                 setStepper_42(0x02, direction2 > 0);
                 basic.pause(timeout1);
                 motorStop(3); motorStop(4);
-            } else if ((Degree2 == 0) && (Degree1 > 0)) { 
+            } else if ((Degree2 == 0) && (Degree1 > 0)) {
                 timeout1 = (50000 * Degree1) / (360 * 100)
                 setStepper_42(0x01, direction1 > 0);
                 setStepper_42(0x02, direction2 > 0);
                 basic.pause(timeout1);
                 motorStop(1); motorStop(2);
-            } else if ((Degree2 > Degree1)) { 
+            } else if ((Degree2 > Degree1)) {
                 timeout1 = (50000 * Degree1) / (360 * 100)
                 timeout2 = (50000 * (Degree2 - Degree1)) / (360 * 100)
                 setStepper_42(0x01, direction1 > 0);
@@ -417,7 +417,7 @@ namespace motor {
                 motorStop(1); motorStop(2);
                 basic.pause(timeout2);
                 motorStop(3); motorStop(4);
-            }  else if ((Degree2 < Degree1)) { 
+            } else if ((Degree2 < Degree1)) {
                 timeout1 = (50000 * Degree2) / (360 * 100)
                 timeout2 = (50000 * (Degree1 - Degree2)) / (360 * 100)
                 setStepper_42(0x01, direction1 > 0);
@@ -426,24 +426,24 @@ namespace motor {
                 motorStop(3); motorStop(4);
                 basic.pause(timeout2);
                 motorStop(1); motorStop(2);
-            } 
+            }
         } else if (stepper == 2) {
             if (Degree1 == 0 && Degree2 == 0) {
                 setStepper_28(0x01, direction1 > 0);
                 setStepper_28(0x02, direction2 > 0);
-            } else if ((Degree1 == 0) && (Degree2 > 0)) { 
+            } else if ((Degree1 == 0) && (Degree2 > 0)) {
                 timeout1 = (50000 * Degree2) / (360 * 100)
                 setStepper_28(0x01, direction1 > 0);
                 setStepper_28(0x02, direction2 > 0);
                 basic.pause(timeout1);
                 motorStop(3); motorStop(4);
-            } else if ((Degree2 == 0) && (Degree1 > 0)) { 
+            } else if ((Degree2 == 0) && (Degree1 > 0)) {
                 timeout1 = (50000 * Degree1) / (360 * 100)
                 setStepper_28(0x01, direction1 > 0);
                 setStepper_28(0x02, direction2 > 0);
                 basic.pause(timeout1);
                 motorStop(1); motorStop(2);
-            } else if ((Degree2 > Degree1)) { 
+            } else if ((Degree2 > Degree1)) {
                 timeout1 = (50000 * Degree1) / (360 * 100)
                 timeout2 = (50000 * (Degree2 - Degree1)) / (360 * 100)
                 setStepper_28(0x01, direction1 > 0);
@@ -452,7 +452,7 @@ namespace motor {
                 motorStop(1); motorStop(2);
                 basic.pause(timeout2);
                 motorStop(3); motorStop(4);
-            }  else if ((Degree2 < Degree1)) { 
+            } else if ((Degree2 < Degree1)) {
                 timeout1 = (50000 * Degree2) / (360 * 100)
                 timeout2 = (50000 * (Degree1 - Degree2)) / (360 * 100)
                 setStepper_28(0x01, direction1 > 0);
@@ -461,8 +461,8 @@ namespace motor {
                 motorStop(3); motorStop(4);
                 basic.pause(timeout2);
                 motorStop(1); motorStop(2);
-            } 
-        } else { 
+            }
+        } else {
             //
         }
     }
@@ -475,21 +475,21 @@ namespace motor {
     //% stepper.fieldEditor="gridpicker" stepper.fieldOptions.columns=2
     //% direction1.fieldEditor="gridpicker" direction1.fieldOptions.columns=2
     //% direction2.fieldEditor="gridpicker" direction2.fieldOptions.columns=2
-    export function stepperTurnDual_42(stepper: Stepper, direction1: Dir, trun1: number, direction2: Dir,trun2: number): void {
-        if ((trun1 == 0)&&(trun2 == 0)) { 
+    export function stepperTurnDual_42(stepper: Stepper, direction1: Dir, trun1: number, direction2: Dir, trun2: number): void {
+        if ((trun1 == 0) && (trun2 == 0)) {
             return;
         }
         let degree1 = trun1 * 360;
         let degree2 = trun2 * 360;
-        
+
         if (stepper == 1) {
             stepperDegreeDual_42(stepper, direction1, degree1, direction2, degree2);
         } else if (stepper == 2) {
             stepperDegreeDual_42(stepper, direction1, degree1, direction2, degree2);
-        } else { 
+        } else {
 
         }
-        
+
     }
 
     /**

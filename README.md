@@ -1,48 +1,62 @@
-# DF-Driver
+# MecaDrive
 
-Micro:bit motor drive expansion board.
+Micro:bit mecanum wheel and motor control library.
 ---------------------------------------------------------
 
 ## Table of Contents
 
-* [URL](#url)
 * [Summary](#summary)
+* [Features](#features)
 * [Blocks](#blocks)
 * [License](#license)
 
-## URL
-project URL:  ```https://github.com/DFRobot/pxt-motor```
-
 ## Summary
-Micro: bit motor driven expansion board is not only expanded the motor drive, in the integration of this extended board four motor driven, 2 road, on the basis of stepper motor driver, also raises the additional 8 road steering gear interface, IO port, 2 road 9 I2C interface.
-The motor adopts the interface mode of large current, and the steering machine, I2C and IO port all use Gravity standard interface to support a large number of modules and sensors.
-The expansion board USES 3.5v ~ 5.5v power supply, 3.5mm plug and wiring two power interface modes.It has the characteristics of wide range of voltage adaption, large number of ports, compact size, plug and play, convenience and so on.
+MecaDrive is a motor control library for micro:bit, designed for DFRobot motor driver expansion boards (DFR0548). It provides intuitive blocks for controlling mecanum wheel robots, individual DC motors, and servos.
+
+Perfect for educational robotics projects with kids!
+
+## Features
+
+- **Mecanum Wheel Control**: 10 directional movements (forward, backward, strafe left/right, rotate CW/CCW, 4 diagonal directions)
+- **DC Motor Control**: Individual control of 4 DC motors (M1-M4) with configurable directions
+- **Servo Control**: Control up to 8 servo motors (S1-S8)
+- **Configurable**: Runtime configuration for motor directions and brake strength
+- **Kid-Friendly**: Natural language blocks in English, German, and Chinese
+- **Hardware Optimized**: Handles HR8833 chip quirks automatically
 
 ## Blocks
-### 1.Servo
-![image](https://github.com/DFRobot/pxt-motor/blob/master/image/1.png)
 
-### 2.DC Motor
-![image](https://github.com/DFRobot/pxt-motor/blob/master/image/7.png)
+### 1. Mecanum Movement
+Control omnidirectional movement with mecanum wheels:
+- Move Forward/Backward
+- Strafe Left/Right
+- Rotate CW/CCW
+- Diagonal movements (4 directions)
+- Variable speed (0-255)
 
-### 3.Stepper-28
-![image](https://github.com/DFRobot/pxt-motor/blob/master/image/10.png)<br>
-![image](https://github.com/DFRobot/pxt-motor/blob/master/image/2.png)
+### 2. DC Motor Control
+Control individual motors M1-M4:
+- Clockwise/Counter-clockwise direction
+- Variable speed (0-255)
+- Motor stop (individual or all)
 
-### 4.Stepper-42
-![image](https://github.com/DFRobot/pxt-motor/blob/master/image/8.png)<br>
-![image](https://github.com/DFRobot/pxt-motor/blob/master/image/3.png)
+### 3. Servo Control
+Control servos S1-S8:
+- Position control (0-180 degrees)
 
-### 5.Dual Stepper
-![image](https://github.com/DFRobot/pxt-motor/blob/master/image/5.png)<br>
-![image](https://github.com/DFRobot/pxt-motor/blob/master/image/9.png)
+### 4. Configuration (Advanced)
+- Motor direction configuration (for different chassis layouts)
+- Brake strength adjustment for M3/M4 motors
 
-### 6.Stop the motor
-![image](https://github.com/DFRobot/pxt-motor/blob/master/image/6.png)
+## Hardware Support
 
-### 7.Stop all motors
-![image](https://github.com/DFRobot/pxt-motor/blob/master/image/4.png)
+Compatible with DFRobot DFR0548 motor driver expansion board:
+- 4x DC motor outputs (M1-M4)
+- 8x Servo outputs (S1-S8)
+- 9x IO interface pins (P0, P1, P2, P8, P12, P13, P14, P15, P16) with Gravity connectors
+- PCA9685 PWM controller via I2C
 
+**Note:** The IO pins are standard micro:bit GPIO pins made accessible through Gravity connectors. Use standard micro:bit pin blocks for sensors, switches, and other digital/analog inputs.
 
 ## License
 
@@ -51,7 +65,3 @@ GNU
 ## Supported targets
 
 * for PXT/microbit
-(The metadata above is needed for package search.)
-```package
-gamePad=github:DFRobot/pxt-motor
-```

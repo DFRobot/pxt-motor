@@ -1,15 +1,17 @@
 {
     "name": "motor",
-    "version": "0.0.1",
-    "description": "This is dc motor, stepper motor, steering gear library.",
+    "version": "1.1.0",
+    "description": "MecaDrive - DC motor, servo, and mecanum wheel control library",
     "license": "GNU",
     "dependencies": {
-        "core": "*"
+        "core": "*",
+        "microphone": "*"
     },
     "files": [
         "README.md",
         "main.ts",
-        "_locales/zh/motor-strings.json"
+        "_locales/zh/motor-strings.json",
+        "_locales/de/motor-strings.json"
     ],
     "testFiles": [
         "test.ts"

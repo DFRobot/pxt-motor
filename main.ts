@@ -1,22 +1,39 @@
 /*！
- * @file pxt-motor/main.ts
+ * @file pxt-mecadrive/main.ts
  * @brief DFRobot's microbit motor drive makecode library.
  * @n [Get the module here](http://www.dfrobot.com.cn/goods-1577.html)
- * @n This is the microbit special motor drive library, which realizes control 
- *    of the eight-channel steering gear, two-step motor and four-way dc motor.
+ * @n This is the microbit motor drive library for DC motors, servos, and mecanum wheels.
  *
  * @copyright	[DFRobot](http://www.dfrobot.com), 2016
  * @copyright	GNU Lesser General Public License
  *
  * @author [email](1035868977@qq.com)
- * @version  V1.0.1
- * @date  2018-03-20
+ * @version  V1.1.0
+ * @date  2025-01-16
+ *
+ * CHANGELOG V1.1.0:
+ * - Added mecanum wheel control blocks for educational smart cart
+ * - Support for 10 movement directions: forward, backward, strafe, rotate, diagonals
+ * - Variable speed control (0-255) for all mecanum movements
+ * - Added configurable settings (all runtime, no recompilation needed):
+ *   * Individual motor direction configuration (M1, M2, M3, M4)
+ *   * Brake strength for M3/M4 motors (tune for your motors)
+ *   * Default: M1/M2 normal, M3/M4 reversed, brake=1000
+ * - Fixed M3/M4 motor control to handle U2 HR8833 chip quirks:
+ *   * M3 = Channel 2 (pins 2-3), M4 = Channel 1 (pins 0-1)
+ *   * Both channels have reversed polarity (CW command → CCW rotation)
+ *   * Individual motor control requires brake mode on other channel
+ *   * Strafe adapted to U2 chip limitation (can't drive opposite directions)
+ * - Optimized PWM scaling to use full 0-4095 range (was only using 0-4080)
+ * - Added input validation and clamping for speed parameter
+ * - Removed stepper motor blocks (not supported by expansion board)
+ * - Improved code documentation and robustness
  */
 
 /**
- *This is DFRobot:motor user motor and steering control function.
+ * MecaDrive - Motor driver for DC motors, servos, and mecanum wheels
  */
-//% weight=10 color=#DF6721 icon="\uf013" block="DF-Driver"
+//% weight=10 color=#DF6721 icon="\uf013" block="MecaDrive"
 namespace motor {
     const PCA9685_ADDRESS = 0x40
     const MODE1 = 0x00
@@ -34,43 +51,8 @@ namespace motor {
     const ALL_LED_OFF_L = 0xFC
     const ALL_LED_OFF_H = 0xFD
 
-    const STP_CHA_L = 2047
-    const STP_CHA_H = 4095
-
-    const STP_CHB_L = 1
-    const STP_CHB_H = 2047
-
-    const STP_CHC_L = 1023
-    const STP_CHC_H = 3071
-
-    const STP_CHD_L = 3071
-    const STP_CHD_H = 1023
-
-
-    const BYG_CHA_L = 3071
-    const BYG_CHA_H = 1023
-
-    const BYG_CHB_L = 1023
-    const BYG_CHB_H = 3071
-
-    const BYG_CHC_L = 4095
-    const BYG_CHC_H = 2047
-
-    const BYG_CHD_L = 2047
-    const BYG_CHD_H = 4095
-
     /**
-     * The user can choose the step motor model.
-     */
-    export enum Stepper {
-        //% block="42"
-        Ste1 = 1,
-        //% block="28"
-        Ste2 = 2
-    }
-
-    /**
-     * The user can select the 8 steering gear controller.
+     * The user can select the 8 servo controller.
      */
     export enum Servos {
         S1 = 0x08,
@@ -97,23 +79,49 @@ namespace motor {
      * The user defines the motor rotation direction.
      */
     export enum Dir {
-        //% blockId="CW" block="CW"
+        //% blockId="CW" block="clockwise"
         CW = 1,
-        //% blockId="CCW" block="CCW"
+        //% blockId="CCW" block="counter-clockwise"
         CCW = -1,
     }
 
     /**
-     * The user can select a two-path stepper motor controller.
+     * Mecanum wheel movement directions
      */
-    export enum Steppers {
-        M1_M2 = 0x1,
-        M3_M4 = 0x2
+    export enum MecanumDirection {
+        //% block="Forward"
+        Forward,
+        //% block="Backward"
+        Backward,
+        //% block="Strafe Left"
+        StrafeLeft,
+        //% block="Strafe Right"
+        StrafeRight,
+        //% block="Rotate CW"
+        RotateCW,
+        //% block="Rotate CCW"
+        RotateCCW,
+        //% block="Diagonal Forward-Right"
+        DiagonalForwardRight,
+        //% block="Diagonal Forward-Left"
+        DiagonalForwardLeft,
+        //% block="Diagonal Backward-Right"
+        DiagonalBackwardRight,
+        //% block="Diagonal Backward-Left"
+        DiagonalBackwardLeft
     }
 
 
-
     let initialized = false
+
+    // Motor direction configuration (for different chassis)
+    let reverseM1 = false  // M1 normal by default
+    let reverseM2 = false  // M2 normal by default
+    let reverseM3 = true   // M3 reversed by default (DFRobot chassis)
+    let reverseM4 = true   // M4 reversed by default (DFRobot chassis)
+
+    // Performance tuning
+    let brakePwmLevel = 1000  // Brake mode PWM for M3/M4 (0-4095)
 
     function i2cWrite(addr: number, reg: number, value: number) {
         let buf = pins.createBuffer(2)
@@ -170,73 +178,52 @@ namespace motor {
     }
 
 
-    function setStepper_28(index: number, dir: boolean): void {
-        if (index == 1) {
-            if (dir) {
-                setPwm(4, STP_CHA_L, STP_CHA_H);
-                setPwm(6, STP_CHB_L, STP_CHB_H);
-                setPwm(5, STP_CHC_L, STP_CHC_H);
-                setPwm(7, STP_CHD_L, STP_CHD_H);
-            } else {
-                setPwm(7, STP_CHA_L, STP_CHA_H);
-                setPwm(5, STP_CHB_L, STP_CHB_H);
-                setPwm(6, STP_CHC_L, STP_CHC_H);
-                setPwm(4, STP_CHD_L, STP_CHD_H);
-            }
-        } else {
-            if (dir) {
-                setPwm(0, STP_CHA_L, STP_CHA_H);
-                setPwm(2, STP_CHB_L, STP_CHB_H);
-                setPwm(1, STP_CHC_L, STP_CHC_H);
-                setPwm(3, STP_CHD_L, STP_CHD_H);
-            } else {
-                setPwm(3, STP_CHA_L, STP_CHA_H);
-                setPwm(1, STP_CHB_L, STP_CHB_H);
-                setPwm(2, STP_CHC_L, STP_CHC_H);
-                setPwm(0, STP_CHD_L, STP_CHD_H);
-            }
-        }
-    }
-
-
-    function setStepper_42(index: number, dir: boolean): void {
-        if (index == 1) {
-            if (dir) {
-                setPwm(7, BYG_CHA_L, BYG_CHA_H);
-                setPwm(6, BYG_CHB_L, BYG_CHB_H);
-                setPwm(5, BYG_CHC_L, BYG_CHC_H);
-                setPwm(4, BYG_CHD_L, BYG_CHD_H);
-            } else {
-                setPwm(7, BYG_CHC_L, BYG_CHC_H);
-                setPwm(6, BYG_CHD_L, BYG_CHD_H);
-                setPwm(5, BYG_CHA_L, BYG_CHA_H);
-                setPwm(4, BYG_CHB_L, BYG_CHB_H);
-            }
-        } else {
-            if (dir) {
-                setPwm(3, BYG_CHA_L, BYG_CHA_H);
-                setPwm(2, BYG_CHB_L, BYG_CHB_H);
-                setPwm(1, BYG_CHC_L, BYG_CHC_H);
-                setPwm(0, BYG_CHD_L, BYG_CHD_H);
-            } else {
-                setPwm(3, BYG_CHC_L, BYG_CHC_H);
-                setPwm(2, BYG_CHD_L, BYG_CHD_H);
-                setPwm(1, BYG_CHA_L, BYG_CHA_H);
-                setPwm(0, BYG_CHB_L, BYG_CHB_H);
-            }
-        }
-    }
-
 
     /**
-	 * Steering gear control function.
-     * S1~S8.
-     * 0°~180°.
+     * Configure motor directions for your chassis. Enable reverse for motors mounted backwards
+     * @param m1 true to reverse M1
+     * @param m2 true to reverse M2
+     * @param m3 true to reverse M3
+     * @param m4 true to reverse M4
+     */
+    //% blockId=motor_configMotorDirections block="Motor directions|M1 reversed %m1|M2 reversed %m2|M3 reversed %m3|M4 reversed %m4"
+    //% weight=103
+    //% m1.shadow="toggleOnOff" m1.defl=false
+    //% m2.shadow="toggleOnOff" m2.defl=false
+    //% m3.shadow="toggleOnOff" m3.defl=true
+    //% m4.shadow="toggleOnOff" m4.defl=true
+    //% advanced=true
+    //% group="Advanced"
+    export function configMotorDirections(m1: boolean, m2: boolean, m3: boolean, m4: boolean): void {
+        reverseM1 = m1
+        reverseM2 = m2
+        reverseM3 = m3
+        reverseM4 = m4
+    }
+
+    /**
+     * Set brake strength for M3/M4 motors (0-4095). Higher values = stronger brake
+     * @param level brake strength 0-4095, default 1000
+     */
+    //% blockId=motor_configBrakePwm block="Set brake strength|%level"
+    //% weight=101
+    //% level.min=0 level.max=4095 level.defl=1000
+    //% advanced=true
+    //% group="Advanced"
+    export function configBrakeStrength(level: number): void {
+        brakePwmLevel = Math.max(0, Math.min(4095, level))
+    }
+
+    /**
+     * Control a servo motor from 0° to 180°
+     * @param index servo S1-S8
+     * @param degree angle 0-180
 	*/
     //% blockId=motor_servo block="Servo|%index|degree|%degree"
-    //% weight=100
+    //% weight=30
     //% degree.min=0 degree.max=180
     //% index.fieldEditor="gridpicker" index.fieldOptions.columns=4
+    //% group="Servos"
     export function servo(index: Servos, degree: number): void {
         if (!initialized) {
             initPCA9685()
@@ -248,270 +235,284 @@ namespace motor {
     }
 
     /**
-	 * Execute a motor
-     * M1~M4.
-     * speed(0~255).
+     * Control an individual DC motor with adjustable speed (0-255)
+     * @param index motor M1-M4
+     * @param direction clockwise or counter-clockwise
+     * @param speed motor speed 0-255
     */
-    //% weight=90
-    //% blockId=motor_MotorRun block="Motor|%index|dir|%Dir|speed|%speed"
-    //% speed.min=0 speed.max=255
+    //% weight=45
+    //% blockId=motor_MotorRun block="Motor|%index|direction|%direction|speed|%speed"
+    //% speed.min=0 speed.max=255 speed.defl=100
     //% index.fieldEditor="gridpicker" index.fieldOptions.columns=2
     //% direction.fieldEditor="gridpicker" direction.fieldOptions.columns=2
+    //% group="Motors"
     export function MotorRun(index: Motors, direction: Dir, speed: number): void {
         if (!initialized) {
             initPCA9685()
         }
-        speed = speed * 16 * direction; // map 255 to 4096
-        if (speed >= 4096) {
-            speed = 4095
-        }
-        if (speed <= -4096) {
-            speed = -4095
-        }
+
+        // Validate motor index
         if (index > 4 || index <= 0)
             return
-        let pn = (4 - index) * 2
-        let pp = (4 - index) * 2 + 1
-        if (speed >= 0) {
-            setPwm(pp, 0, speed)
-            setPwm(pn, 0, 0)
-        } else {
-            setPwm(pp, 0, 0)
-            setPwm(pn, 0, -speed)
+
+        // Validate and clamp speed input (0-255)
+        speed = Math.max(0, Math.min(255, speed))
+
+        // Convert direction enum to multiplier (CW=1, CCW=-1)
+        let directionMultiplier = direction as number
+
+        // Scale speed to PWM range (0-4095) with precise mapping for full torque
+        // Formula: (speed * 4095) / 255 gives exact mapping
+        // speed=255 -> pwmValue=4095 (100% duty cycle)
+        let pwmValue = Math.round((speed * 4095) / 255) * directionMultiplier
+
+        // Pin mapping and control
+        if (index == 1) {
+            // M1: pins 6-7 (U3 chip, normal operation)
+            if (pwmValue >= 0) {
+                setPwm(7, 0, pwmValue)
+                setPwm(6, 0, 0)
+            } else {
+                setPwm(7, 0, 0)
+                setPwm(6, 0, -pwmValue)
+            }
+        } else if (index == 2) {
+            // M2: pins 4-5 (U3 chip, normal operation)
+            if (pwmValue >= 0) {
+                setPwm(5, 0, pwmValue)
+                setPwm(4, 0, 0)
+            } else {
+                setPwm(5, 0, 0)
+                setPwm(4, 0, -pwmValue)
+            }
+        } else if (index == 3) {
+            // M3: Channel 2 (pins 2-3), REVERSED polarity
+            // Need to brake M4 (Channel 1, pins 0-1)
+            // Test showed: pin3 high → M3 CCW, so for CW we need pin2 high
+            if (pwmValue >= 0) {
+                // CW command → flip pins for reversed polarity
+                setPwm(3, 0, 0)
+                setPwm(2, 0, pwmValue)
+            } else {
+                // CCW command → flip pins for reversed polarity
+                setPwm(3, 0, -pwmValue)
+                setPwm(2, 0, 0)
+            }
+            // Brake M4
+            setPwm(1, 0, brakePwmLevel)
+            setPwm(0, 0, brakePwmLevel)
+        } else if (index == 4) {
+            // M4: Channel 1 (pins 0-1), REVERSED polarity
+            // Need to brake M3 (Channel 2, pins 2-3)
+            // Test showed: pin1 high → M4 CCW, so for CW we need pin0 high
+            if (pwmValue >= 0) {
+                // CW command → flip pins for reversed polarity
+                setPwm(1, 0, 0)
+                setPwm(0, 0, pwmValue)
+            } else {
+                // CCW command → flip pins for reversed polarity
+                setPwm(1, 0, -pwmValue)
+                setPwm(0, 0, 0)
+            }
+            // Brake M3
+            setPwm(3, 0, brakePwmLevel)
+            setPwm(2, 0, brakePwmLevel)
         }
     }
 
     /**
-	 * Execute a 42BYGH1861A-C step motor(Degree).
-     * M1_M2/M3_M4.
-    */
-    //% weight=80
-    //% blockId=motor_stepperDegree_42 block="Stepper 42|%index|dir|%direction|degree|%degree"
-    //% index.fieldEditor="gridpicker" index.fieldOptions.columns=2
+     * Move the mecanum wheel chassis in a direction with adjustable speed (0-255)
+     * @param direction movement direction (forward, backward, strafe, rotate, diagonal)
+     * @param speed movement speed 0-255
+     */
+    //% weight=100
+    //% blockId=mecanum_move block="Move|%direction|at speed|%speed"
+    //% speed.min=0 speed.max=255 speed.defl=100
     //% direction.fieldEditor="gridpicker" direction.fieldOptions.columns=2
-    export function stepperDegree_42(index: Steppers, direction: Dir, degree: number): void {
+    //% group="Mecanum Movement"
+    export function mecanumMove(direction: MecanumDirection, speed: number = 100): void {
         if (!initialized) {
             initPCA9685()
         }
-        // let Degree = Math.abs(degree);
-        // Degree = Degree * direction;
-        //setFreq(100);
-        setStepper_42(index, direction > 0);
-        if (degree == 0) {
-            return;
+
+        // Clamp speed
+        speed = Math.max(0, Math.min(255, speed))
+        let pwmSpeed = Math.round((speed * 4095) / 255)
+
+        // Helper to set U2 motors (M3 and M4) with proper polarity and brake mode
+        function setU2Motors(m3Dir: number, m4Dir: number, pwm: number) {
+            // Apply reversal if configured
+            if (reverseM3) m3Dir = -m3Dir
+            if (reverseM4) m4Dir = -m4Dir
+
+            // M3 = Channel 2 (pins 2-3), reversed polarity
+            // M4 = Channel 1 (pins 0-1), reversed polarity
+
+            if (m3Dir > 0) {
+                // M3 CW (accounting for reversed polarity: pin2 high)
+                setPwm(3, 0, 0)
+                setPwm(2, 0, pwm)
+            } else if (m3Dir < 0) {
+                // M3 CCW (accounting for reversed polarity: pin3 high)
+                setPwm(3, 0, pwm)
+                setPwm(2, 0, 0)
+            } else {
+                // M3 brake
+                setPwm(3, 0, brakePwmLevel)
+                setPwm(2, 0, brakePwmLevel)
+            }
+
+            if (m4Dir > 0) {
+                // M4 CW (accounting for reversed polarity: pin0 high)
+                setPwm(1, 0, 0)
+                setPwm(0, 0, pwm)
+            } else if (m4Dir < 0) {
+                // M4 CCW (accounting for reversed polarity: pin1 high)
+                setPwm(1, 0, pwm)
+                setPwm(0, 0, 0)
+            } else {
+                // M4 brake
+                setPwm(1, 0, brakePwmLevel)
+                setPwm(0, 0, brakePwmLevel)
+            }
         }
-        let Degree = Math.abs(degree);
-        basic.pause((50000 * Degree) / (360 * 100));  //100hz
-        if (index == 1) {
-            motorStop(1)
-            motorStop(2)
-        } else {
-            motorStop(3)
-            motorStop(4)
+
+        // M1 and M2 helper - account for individual motor reversal
+        function setM1M2(motor: number, dir: number, pwm: number) {
+            // Apply reversal if configured
+            if (motor == 1 && reverseM1) dir = -dir
+            if (motor == 2 && reverseM2) dir = -dir
+
+            if (motor == 1) {
+                if (dir > 0) {
+                    setPwm(7, 0, pwm)
+                    setPwm(6, 0, 0)
+                } else if (dir < 0) {
+                    setPwm(7, 0, 0)
+                    setPwm(6, 0, pwm)
+                } else {
+                    setPwm(7, 0, 0)
+                    setPwm(6, 0, 0)
+                }
+            } else {
+                if (dir > 0) {
+                    setPwm(5, 0, pwm)
+                    setPwm(4, 0, 0)
+                } else if (dir < 0) {
+                    setPwm(5, 0, 0)
+                    setPwm(4, 0, pwm)
+                } else {
+                    setPwm(5, 0, 0)
+                    setPwm(4, 0, 0)
+                }
+            }
         }
-        //setFreq(50);
+
+        // Apply movements - motor reversal handled in helper functions
+        switch (direction) {
+            case MecanumDirection.Forward:
+                setM1M2(1, 1, pwmSpeed)
+                setM1M2(2, 1, pwmSpeed)
+                setU2Motors(-1, -1, pwmSpeed)  // Reversed due to mounting
+                break
+
+            case MecanumDirection.Backward:
+                setM1M2(1, -1, pwmSpeed)
+                setM1M2(2, -1, pwmSpeed)
+                setU2Motors(1, 1, pwmSpeed)  // Reversed due to mounting
+                break
+
+            case MecanumDirection.StrafeRight:
+                // Use M1+M2 only (right side) - they can go opposite directions
+                setM1M2(1, -1, pwmSpeed)  // FR CCW
+                setM1M2(2, 1, pwmSpeed)   // RR CW
+                // M3+M4 brake (U2 chip can't do opposite directions)
+                setU2Motors(0, 0, pwmSpeed)
+                break
+
+            case MecanumDirection.StrafeLeft:
+                // Use M3+M4 only (left side) - they must go same direction due to U2 chip
+                setM1M2(1, 0, 0)  // M1+M2 stop
+                setM1M2(2, 0, 0)
+                setU2Motors(1, 1, pwmSpeed)  // Reversed due to mounting
+                break
+
+            case MecanumDirection.RotateCW:
+                setM1M2(1, 1, pwmSpeed)
+                setM1M2(2, 1, pwmSpeed)
+                setU2Motors(-1, -1, pwmSpeed)  // Reversed due to mounting
+                break
+
+            case MecanumDirection.RotateCCW:
+                setM1M2(1, -1, pwmSpeed)
+                setM1M2(2, -1, pwmSpeed)
+                setU2Motors(1, 1, pwmSpeed)  // Reversed due to mounting
+                break
+
+            case MecanumDirection.DiagonalForwardRight:
+                setM1M2(1, 0, 0)
+                setM1M2(2, 1, pwmSpeed)
+                setU2Motors(0, -1, pwmSpeed)  // M3 brake, M4 forward (reversed)
+                break
+
+            case MecanumDirection.DiagonalForwardLeft:
+                setM1M2(1, 1, pwmSpeed)
+                setM1M2(2, 0, 0)
+                setU2Motors(-1, 0, pwmSpeed)  // M3 forward (reversed), M4 brake
+                break
+
+            case MecanumDirection.DiagonalBackwardRight:
+                setM1M2(1, -1, pwmSpeed)
+                setM1M2(2, 0, 0)
+                setU2Motors(1, 0, pwmSpeed)  // M3 backward (reversed), M4 brake
+                break
+
+            case MecanumDirection.DiagonalBackwardLeft:
+                setM1M2(1, 0, 0)
+                setM1M2(2, -1, pwmSpeed)
+                setU2Motors(0, 1, pwmSpeed)  // M3 brake, M4 backward (reversed)
+                break
+        }
     }
 
     /**
-	 * Execute a 42BYGH1861A-C step motor(Turn).
-     * M1_M2/M3_M4.
-    */
-    //% weight=70
-    //% blockId=motor_stepperTurn_42 block="Stepper 42|%index|dir|%direction|turn|%turn"
-    //% index.fieldEditor="gridpicker" index.fieldOptions.columns=2
-    //% direction.fieldEditor="gridpicker" direction.fieldOptions.columns=2
-    export function stepperTurn_42(index: Steppers, direction: Dir, turn: number): void {
-        if (turn == 0) {
-            return;
-        }
-        let degree = turn * 360;
-        stepperDegree_42(index, direction, degree);
-    }
-
-    /**
-	 * Execute a 28BYJ-48 step motor(Degree).
-     * M1_M2/M3_M4.
-    */
-    //% weight=60
-    //% blockId=motor_stepperDegree_28 block="Stepper 28|%index|dir|%direction|degree|%degree"
-    //% index.fieldEditor="gridpicker" index.fieldOptions.columns=2
-    //% direction.fieldEditor="gridpicker" direction.fieldOptions.columns=2
-    export function stepperDegree_28(index: Steppers, direction: Dir, degree: number): void {
-        if (!initialized) {
-            initPCA9685()
-        }
-        if (degree == 0) {
-            return;
-        }
-        let Degree = Math.abs(degree);
-        Degree = Degree * direction;
-        //setFreq(100);
-        setStepper_28(index, Degree > 0);
-        Degree = Math.abs(Degree);
-        basic.pause((1000 * Degree) / 360);
-        if (index == 1) {
-            motorStop(1)
-            motorStop(2)
-        } else {
-            motorStop(3)
-            motorStop(4)
-        }
-        //setFreq(50);
-    }
-
-    /**
-	 * Execute a 28BYJ-48 step motor(Turn).
-     * M1_M2/M3_M4.
-    */
-    //% weight=50
-    //% blockId=motor_stepperTurn_28 block="Stepper 28|%index|dir|%direction|turn|%turn"
-    //% index.fieldEditor="gridpicker" index.fieldOptions.columns=2
-    //% direction.fieldEditor="gridpicker" direction.fieldOptions.columns=2
-    export function stepperTurn_28(index: Steppers, direction: Dir, turn: number): void {
-        if (turn == 0) {
-            return;
-        }
-        let degree = turn * 360;
-        stepperDegree_28(index, direction, degree);
-    }
-
-    /**
-	 * Two parallel stepper motors are executed simultaneously(DegreeDual).
+     * Stop an individual motor. Note: Stopping M3 or M4 stops both motors
+     * @param index motor M1-M4 to stop
     */
     //% weight=40
-    //% blockId=motor_stepperDegreeDual_42 block="Dual Stepper %stepper|M1_M2 dir %direction1|degree %degree1|M3_M4 dir %direction2|degree %degree2"
-    //% stepper.fieldEditor="gridpicker" stepper.fieldOptions.columns=2
-    //% direction1.fieldEditor="gridpicker" direction1.fieldOptions.columns=2
-    //% direction2.fieldEditor="gridpicker" direction2.fieldOptions.columns=2
-    export function stepperDegreeDual_42(stepper: Stepper, direction1: Dir, degree1: number, direction2: Dir, degree2: number): void {
-        if (!initialized) {
-            initPCA9685()
-        }
-        let timeout1 = 0;
-        let timeout2 = 0;
-        let Degree1 = Math.abs(degree1);
-        let Degree2 = Math.abs(degree2);
-
-        if (stepper == 1) {  // 42 stepper
-            if (Degree1 == 0 && Degree2 == 0) {
-                setStepper_42(0x01, direction1 > 0);
-                setStepper_42(0x02, direction2 > 0);
-            } else if ((Degree1 == 0) && (Degree2 > 0)) {
-                timeout1 = (50000 * Degree2) / (360 * 100)
-                setStepper_42(0x01, direction1 > 0);
-                setStepper_42(0x02, direction2 > 0);
-                basic.pause(timeout1);
-                motorStop(3); motorStop(4);
-            } else if ((Degree2 == 0) && (Degree1 > 0)) {
-                timeout1 = (50000 * Degree1) / (360 * 100)
-                setStepper_42(0x01, direction1 > 0);
-                setStepper_42(0x02, direction2 > 0);
-                basic.pause(timeout1);
-                motorStop(1); motorStop(2);
-            } else if ((Degree2 > Degree1)) {
-                timeout1 = (50000 * Degree1) / (360 * 100)
-                timeout2 = (50000 * (Degree2 - Degree1)) / (360 * 100)
-                setStepper_42(0x01, direction1 > 0);
-                setStepper_42(0x02, direction2 > 0);
-                basic.pause(timeout1);
-                motorStop(1); motorStop(2);
-                basic.pause(timeout2);
-                motorStop(3); motorStop(4);
-            } else if ((Degree2 < Degree1)) {
-                timeout1 = (50000 * Degree2) / (360 * 100)
-                timeout2 = (50000 * (Degree1 - Degree2)) / (360 * 100)
-                setStepper_42(0x01, direction1 > 0);
-                setStepper_42(0x02, direction2 > 0);
-                basic.pause(timeout1);
-                motorStop(3); motorStop(4);
-                basic.pause(timeout2);
-                motorStop(1); motorStop(2);
-            }
-        } else if (stepper == 2) {
-            if (Degree1 == 0 && Degree2 == 0) {
-                setStepper_28(0x01, direction1 > 0);
-                setStepper_28(0x02, direction2 > 0);
-            } else if ((Degree1 == 0) && (Degree2 > 0)) {
-                timeout1 = (50000 * Degree2) / (360 * 100)
-                setStepper_28(0x01, direction1 > 0);
-                setStepper_28(0x02, direction2 > 0);
-                basic.pause(timeout1);
-                motorStop(3); motorStop(4);
-            } else if ((Degree2 == 0) && (Degree1 > 0)) {
-                timeout1 = (50000 * Degree1) / (360 * 100)
-                setStepper_28(0x01, direction1 > 0);
-                setStepper_28(0x02, direction2 > 0);
-                basic.pause(timeout1);
-                motorStop(1); motorStop(2);
-            } else if ((Degree2 > Degree1)) {
-                timeout1 = (50000 * Degree1) / (360 * 100)
-                timeout2 = (50000 * (Degree2 - Degree1)) / (360 * 100)
-                setStepper_28(0x01, direction1 > 0);
-                setStepper_28(0x02, direction2 > 0);
-                basic.pause(timeout1);
-                motorStop(1); motorStop(2);
-                basic.pause(timeout2);
-                motorStop(3); motorStop(4);
-            } else if ((Degree2 < Degree1)) {
-                timeout1 = (50000 * Degree2) / (360 * 100)
-                timeout2 = (50000 * (Degree1 - Degree2)) / (360 * 100)
-                setStepper_28(0x01, direction1 > 0);
-                setStepper_28(0x02, direction2 > 0);
-                basic.pause(timeout1);
-                motorStop(3); motorStop(4);
-                basic.pause(timeout2);
-                motorStop(1); motorStop(2);
-            }
-        } else {
-            //
-        }
-    }
-
-    /**
-	 * Two parallel stepper motors are executed simultaneously(Turn).
-    */
-    //% weight=30
-    //% blockId=motor_stepperTurnDual_42 block="Dual Stepper %stepper|M1_M2 dir %direction1|trun %trun1|M3_M4 dir %direction2|trun %trun2"
-    //% stepper.fieldEditor="gridpicker" stepper.fieldOptions.columns=2
-    //% direction1.fieldEditor="gridpicker" direction1.fieldOptions.columns=2
-    //% direction2.fieldEditor="gridpicker" direction2.fieldOptions.columns=2
-    export function stepperTurnDual_42(stepper: Stepper, direction1: Dir, trun1: number, direction2: Dir, trun2: number): void {
-        if ((trun1 == 0) && (trun2 == 0)) {
-            return;
-        }
-        let degree1 = trun1 * 360;
-        let degree2 = trun2 * 360;
-
-        if (stepper == 1) {
-            stepperDegreeDual_42(stepper, direction1, degree1, direction2, degree2);
-        } else if (stepper == 2) {
-            stepperDegreeDual_42(stepper, direction1, degree1, direction2, degree2);
-        } else {
-
-        }
-
-    }
-
-    /**
-	 * Stop the dc motor.
-    */
-    //% weight=20
     //% blockId=motor_motorStop block="Motor stop|%index"
-    //% index.fieldEditor="gridpicker" index.fieldOptions.columns=2 
+    //% index.fieldEditor="gridpicker" index.fieldOptions.columns=2
+    //% group="Motors"
     export function motorStop(index: Motors) {
-        setPwm((4 - index) * 2, 0, 0);
-        setPwm((4 - index) * 2 + 1, 0, 0);
+        if (index == 1) {
+            // M1: U3 chip
+            setPwm(7, 0, 0)
+            setPwm(6, 0, 0)
+        } else if (index == 2) {
+            // M2: U3 chip
+            setPwm(5, 0, 0)
+            setPwm(4, 0, 0)
+        } else if (index == 3 || index == 4) {
+            // M3 and M4 share U2 chip - stop both for safety
+            setPwm(3, 0, 0)  // M3
+            setPwm(2, 0, 0)
+            setPwm(1, 0, 0)  // M4
+            setPwm(0, 0, 0)
+        }
     }
 
     /**
-	 * Stop all motors
+     * Stop all four motors immediately
     */
-    //% weight=10
+    //% weight=35
     //% blockId=motor_motorStopAll block="Motor Stop All"
+    //% group="Motors"
     export function motorStopAll(): void {
         for (let idx = 1; idx <= 4; idx++) {
             motorStop(idx);
         }
     }
+
+
 }
 

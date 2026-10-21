@@ -408,7 +408,7 @@ namespace motor {
                 setStepper_42(0x02, direction2 > 0);
                 basic.pause(timeout1);
                 motorStop(1); motorStop(2);
-            } else if ((Degree2 > Degree1)) {
+            } else if ((Degree2 >= Degree1)) {
                 timeout1 = (50000 * Degree1) / (360 * 100)
                 timeout2 = (50000 * (Degree2 - Degree1)) / (360 * 100)
                 setStepper_42(0x01, direction1 > 0);
@@ -443,7 +443,7 @@ namespace motor {
                 setStepper_28(0x02, direction2 > 0);
                 basic.pause(timeout1);
                 motorStop(1); motorStop(2);
-            } else if ((Degree2 > Degree1)) {
+            } else if ((Degree2 >= Degree1)) {
                 timeout1 = (50000 * Degree1) / (360 * 100)
                 timeout2 = (50000 * (Degree2 - Degree1)) / (360 * 100)
                 setStepper_28(0x01, direction1 > 0);
